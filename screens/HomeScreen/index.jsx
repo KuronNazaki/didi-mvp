@@ -1,6 +1,4 @@
 import { StatusBar, Text, View } from 'react-native';
-import BaseLayout from '../../layouts/BaseLayout';
-import { BaseButton } from '../../components/Button';
 import { useHeaderHeight } from '@react-navigation/elements';
 import StyledImage from '../../components/StyledImage';
 
