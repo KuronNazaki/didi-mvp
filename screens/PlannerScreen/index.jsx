@@ -14,10 +14,11 @@ import ArrowLeftSvg from './../../assets/arrow-left-1.svg';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ChooseTypeScreen from '../ChooseTypeScreen';
 import { BlurView } from 'expo-blur';
+import CreatePlanScreen from '../CreatePlanScreen';
 
 const Stack = createNativeStackNavigator();
 
-const PlannerMainScreen = ({navigation}) => {
+const PlannerMainScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
 
   return (
@@ -82,6 +83,23 @@ export default function PlannerScreen() {
           component={ChooseTypeScreen}
           options={({ navigation }) => ({
             headerTitle: 'Choose Type',
+            headerTitleStyle: {
+              fontFamily: 'Inter-Bold',
+              color: '#36373B',
+            },
+            headerTintColor: '#537FE7',
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <ArrowLeftSvg width={30} height={30} color={'#537FE7'} />
+              </TouchableOpacity>
+            ),
+          })}
+        />
+        <Stack.Screen
+          name="CreatePlan"
+          component={CreatePlanScreen}
+          options={({ navigation }) => ({
+            headerTitle: 'Create New Plan',
             headerTitleStyle: {
               fontFamily: 'Inter-Bold',
               color: '#36373B',

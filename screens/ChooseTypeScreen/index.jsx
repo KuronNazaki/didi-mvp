@@ -9,6 +9,7 @@ const BUTTONS = [
     id: 1,
     title: 'Create New Plan',
     icon: <AddItemSvg width={80} height={80} color={'white'} />,
+    onPress: (navigation) => () => navigation.navigate('CreatePlan'),
   },
   {
     id: 2,
@@ -26,11 +27,15 @@ const ChooseTypeScreen = ({ navigation }) => {
       style={{ paddingTop: headerHeight + 20, paddingHorizontal: 20 }}
     >
       <FlatList
-			className={`overflow-visible`}
+        className={`overflow-visible`}
         ItemSeparatorComponent={() => <View style={{ height: 20 }} />}
         data={BUTTONS}
         renderItem={({ item }) => (
-          <IconButton title={item.title} icon={item.icon} />
+          <IconButton
+            title={item.title}
+            icon={item.icon}
+            onPress={item.onPress?.(navigation)}
+          />
         )}
         keyExtractor={(item) => item.id}
       />

@@ -1,3 +1,5 @@
+const { GLOBAL_COLORS } = require('./constants/global');
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   content: [
@@ -9,12 +11,10 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        'accent-blue': '#537FE7',
-        'accent-blue-30': '#537FE730',
-      },
-      textColor: {
-        primary: '#36373B',
-        secondary: '#9DA0A5',
+        'accent-blue': GLOBAL_COLORS['accent-blue'],
+        'accent-blue-30': GLOBAL_COLORS['accent-blue-30'],
+        grey: GLOBAL_COLORS['grey'],
+        'light-grey': GLOBAL_COLORS['light-grey'],
       },
     },
   },
