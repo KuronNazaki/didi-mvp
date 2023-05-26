@@ -7,10 +7,9 @@ import { useFonts } from 'expo-font';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { StyleSheet } from 'react-native';
-import { SvgFromUri } from 'react-native-svg';
-import BoxSvg from './assets/box-1.svg';
 import Svg from './constants/svg';
 import ProfileScreen from './screens/ProfileScreen';
+import ChooseTypeScreen from './screens/ChooseTypeScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -47,8 +46,7 @@ export default function App() {
               />
             ),
             tabBarIcon: ({ focused, size, color }) => {
-              console.log(route);
-              return Svg[route.name](size, color);
+              return Svg[route.name] && Svg[route.name](size, color);
             },
             tabBarLabelStyle: {
               fontSize: 14,
@@ -56,7 +54,6 @@ export default function App() {
             },
             tabBarActiveTintColor: '#537FE7',
             tabBarInactiveTintColor: '#537FE74D',
-            headerTransparent: true,
           })}
         >
           <Tab.Group>
@@ -72,22 +69,14 @@ export default function App() {
                     style={StyleSheet.absoluteFill}
                   />
                 ),
+                headerTransparent: true
               }}
             />
             <Tab.Screen
               name="Planner"
               component={PlannerScreen}
               options={{
-                headerTitle: '',
-                headerBackground: () => (
-                  <BlurView
-                    tint="light"
-                    intensity={50}
-                    style={
-                      StyleSheet.absoluteFill
-                    }
-                  />
-                ),
+                headerShown: false,
               }}
             />
             <Tab.Screen
@@ -99,9 +88,7 @@ export default function App() {
                   <BlurView
                     tint="light"
                     intensity={50}
-                    style={
-                      StyleSheet.absoluteFill
-                    }
+                    style={StyleSheet.absoluteFill}
                   />
                 ),
               }}
