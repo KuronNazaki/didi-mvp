@@ -1,9 +1,6 @@
-import { StatusBar, Text, View } from "react-native";
-// import BaseLayout from '../../layouts/BaseLayout';
-import { BaseButton } from "../../components/Button";
-import { useHeaderHeight } from "@react-navigation/elements";
-import StyledImage from "../../components/StyledImage";
-import Card from "../../components/Card";
+import { StatusBar, Text, View } from 'react-native';
+import { useHeaderHeight } from '@react-navigation/elements';
+import StyledImage from '../../components/StyledImage';
 
 export default function HomeScreen({ navigation }) {
   const headerHeight = useHeaderHeight();
