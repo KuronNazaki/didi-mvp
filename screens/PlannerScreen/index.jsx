@@ -1,6 +1,6 @@
 import { ScrollView, View } from 'react-native';
 import { BaseButton } from '../../components/Button';
-import BaseLayout from '../../layouts/BaseLayout';
+// import BaseLayout from '../../layouts/BaseLayout';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { useState } from 'react';
 
