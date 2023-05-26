@@ -1,6 +1,9 @@
-import { StatusBar, Text, View } from 'react-native';
-import { useHeaderHeight } from '@react-navigation/elements';
-import StyledImage from '../../components/StyledImage';
+import { StatusBar, Text, View } from "react-native";
+import { useHeaderHeight } from "@react-navigation/elements";
+import StyledImage from "../../components/StyledImage";
+import Card from "../../components/Card";
+
+import Halong from "./../../assets/halong.png";
 
 export default function HomeScreen({ navigation }) {
   const headerHeight = useHeaderHeight();
@@ -13,7 +16,7 @@ export default function HomeScreen({ navigation }) {
         height: "100%",
       }}
     >
-      <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
+      <View className={`flex-row items-center mt-5`} style={{ columnGap: 10 }}>
         <StyledImage relativeSrc={require("./../../assets/avatar.png")} />
         <View>
           <Text
@@ -28,7 +31,18 @@ export default function HomeScreen({ navigation }) {
         </View>
       </View>
       <View>
-        <Card></Card>
+        <Card
+          title="Hạ Long trong tôi"
+          place="Hạ Long"
+          image={Halong}
+          time="Feb 23, 2023 → Feb 25, 2023"
+        ></Card>
+        <Card
+          title="Hạ Long trong tôi"
+          place="Hạ Long"
+          image={Halong}
+          time="Feb 23, 2023 → Feb 25, 2023"
+        ></Card>
       </View>
       {/* <BaseButton
         title={'Change to Planner'}
