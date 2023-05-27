@@ -7,7 +7,7 @@ const StyledImage = ({ relativeSrc }) => {
       style={{
         width: 60,
         height: 60,
-        borderRadius: '100%',
+        borderRadius: 100,
         backgroundColor: '#F5F5F5',
         shadowOffset: {
           width: 0,
