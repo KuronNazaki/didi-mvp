@@ -2,6 +2,7 @@ import { StatusBar, Text, View } from "react-native";
 import { useHeaderHeight } from "@react-navigation/elements";
 import StyledImage from "../../components/StyledImage";
 import Card from "../../components/Card";
+import PlaceModal from "../../components/PlaceModal";
 
 import Halong from "./../../assets/halong.png";
 
@@ -44,6 +45,7 @@ export default function HomeScreen({ navigation }) {
           time="Feb 23, 2023 → Feb 25, 2023"
         ></Card>
       </View>
+      <PlaceModal />
       {/* <BaseButton
         title={'Change to Planner'}
         onPress={() => navigation.navigate('Planner')}
