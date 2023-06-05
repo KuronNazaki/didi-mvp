@@ -1,6 +1,4 @@
 import { Text, View, Image, StyleSheet } from "react-native";
-import { Shadow } from "react-native-shadow";
-
 import Route from "../../assets/svg/route";
 
 export default function Card({ title, place, image, time }) {
