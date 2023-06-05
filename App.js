@@ -1,59 +1,45 @@
-import { StatusBar } from "expo-status-bar";
-import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import HomeScreen from "./screens/HomeScreen";
-import PlannerScreen from "./screens/PlannerScreen";
-import { useFonts } from "expo-font";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { BlurView } from "expo-blur";
-import { StyleSheet } from "react-native";
-import Svg from "./constants/svg";
-import ProfileScreen from "./screens/ProfileScreen";
-import ChooseTypeScreen from "./screens/ChooseTypeScreen";
+import { StatusBar } from 'expo-status-bar';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from './screens/HomeScreen';
+import PlannerScreen from './screens/PlannerScreen';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { BlurView } from 'expo-blur';
+import { StyleSheet } from 'react-native';
+import Svg from './constants/svg';
+import ProfileScreen from './screens/ProfileScreen';
+import {
+  GLOBAL_COLORS,
+  GLOBAL_TEXT_STYLES,
+  fontOffset,
+} from './constants/global';
 
-const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [loaded] = useFonts({
-    "Inter-Black": require("./assets/fonts/Inter/Inter_Black.ttf"),
-    "Inter-Bold": require("./assets/fonts/Inter/Inter_Bold.ttf"),
-    "Inter-ExtraBold": require("./assets/fonts/Inter/Inter_ExtraBold.ttf"),
-    "Inter-ExtraLight": require("./assets/fonts/Inter/Inter_ExtraLight.ttf"),
-    "Inter-Light": require("./assets/fonts/Inter/Inter_Light.ttf"),
-    "Inter-Medium": require("./assets/fonts/Inter/Inter_Medium.ttf"),
-    "Inter-Regular": require("./assets/fonts/Inter/Inter_Regular.ttf"),
-    "Inter-SemiBold": require("./assets/fonts/Inter/Inter_SemiBold.ttf"),
-    "Inter-Thin": require("./assets/fonts/Inter/Inter_Thin.ttf"),
-  });
-
-  if (!loaded) {
-    return <></>;
-  }
-
   return (
     <>
       <NavigationContainer>
         <StatusBar style="auto" />
         <Tab.Navigator
           screenOptions={({ route }) => ({
-            tabBarStyle: { position: "absolute", paddingTop: 10 },
+            tabBarStyle: { position: 'absolute' },
             tabBarBackground: () => (
               <BlurView
                 tint="light"
                 intensity={80}
-                style={StyleSheet.absoluteFill}
+                style={{ ...StyleSheet.absoluteFill }}
               />
             ),
             tabBarIcon: ({ focused, size, color }) => {
               return Svg[route.name] && Svg[route.name](size, color);
             },
             tabBarLabelStyle: {
-              fontSize: 14,
-              fontFamily: "Inter-SemiBold",
+              ...GLOBAL_TEXT_STYLES.semibold10,
+              fontSize: fontOffset + 6,
             },
-            tabBarActiveTintColor: "#537FE7",
-            tabBarInactiveTintColor: "#537FE74D",
+            tabBarActiveTintColor: GLOBAL_COLORS.ACCENT.blue100,
+            tabBarInactiveTintColor: GLOBAL_COLORS.ACCENT.blue50,
           })}
         >
           <Tab.Group>
@@ -61,11 +47,12 @@ export default function App() {
               name="Home"
               component={HomeScreen}
               options={{
-                headerTitle: "",
+                title: 'Trang chủ',
+                headerTitle: '',
                 headerBackground: () => (
                   <BlurView
                     tint="light"
-                    intensity={50}
+                    intensity={20}
                     style={StyleSheet.absoluteFill}
                   />
                 ),
@@ -76,21 +63,26 @@ export default function App() {
               name="Planner"
               component={PlannerScreen}
               options={{
+                title: 'Lịch trình',
                 headerShown: false,
+                headerTransparent: true,
+                headerTitle: '',
               }}
             />
             <Tab.Screen
               name="Profile"
               component={ProfileScreen}
               options={{
-                headerTitle: "",
+                title: 'Hồ sơ',
+                headerTitle: '',
                 headerBackground: () => (
                   <BlurView
                     tint="light"
-                    intensity={50}
+                    intensity={20}
                     style={StyleSheet.absoluteFill}
                   />
                 ),
+                headerTransparent: true,
               }}
             />
           </Tab.Group>

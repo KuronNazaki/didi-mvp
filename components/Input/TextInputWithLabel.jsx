@@ -1,27 +1,32 @@
 import React, { useState } from 'react';
 import {
   Keyboard,
+  StyleSheet,
   Text,
   TextInput,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-// import DismissKeyboardView from '../DismissKeyboardView';
+import { GLOBAL_TEXT_STYLES } from '../../constants/global';
 
-const TextInputWithLabel = ({ label, placeholder = '', multiline = false }) => {
-  const [value, onValueChange] = useState('');
+const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
+
+const TextInputWithLabel = ({ label, placeholder = '', multiline = false, value, onValueChange }) => {
+  // const [value, onValueChange] = useState('');
 
   return (
     <View style={{ flex: 1 }}>
-      <Text className={`text-xl font-[Inter-Bold] text-primary`}>{label}</Text>
-      <View className={`mt-3 py-4 px-5 rounded-lg bg-[#EFF3F4]`}>
+      <Text className={`text-ink-primary`} style={{ ...TextStyle.semibold15 }}>
+        {label}
+      </Text>
+      <View className={`mt-3 py-4 px-5 rounded-lg bg-ink-senary`}>
         <TextInput
           value={value}
           onChangeText={onValueChange}
           placeholder={placeholder}
           keyboardType="default"
-          className={`text-lg font-[Inter-Regular]`}
-          style={{ lineHeight: 20 }}
+          className={`text-ink-primary`}
+          style={{...TextStyle.regular10}}
           multiline={multiline}
         />
       </View>

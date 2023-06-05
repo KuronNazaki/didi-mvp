@@ -1,38 +1,53 @@
 import { Text, View, Image, StyleSheet } from "react-native";
-import Route from "../../assets/svg/route";
+import RouteSvg from '../../assets/route-square.svg';
+import { GLOBAL_TEXT_STYLES } from '../../constants/global';
 
-export default function Card({ title, place, image, time }) {
+const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
+
+export default function Card({ title, place, image, time, fullWidth = false }) {
   const styles = StyleSheet.create({
     container: {
-      shadowColor: "#000000",
+      shadowColor: '#000000',
       shadowOffset: {
         width: 0,
         height: 3,
       },
-      shadowRadius: 5,
-      shadowOpacity: 0.5,
+      shadowRadius: 15,
+      shadowOpacity: 0.15,
     },
   });
   return (
     <View
-      className={`w-full p-5 rounded-lg bg-white shadow-2xl mt-5`}
+      className={`${fullWidth ? 'w-full' : 'w-[300]'} p-[15] rounded-lg bg-white shadow-2xl mt-5 overflow-visible`}
       style={styles.container}
     >
       <Image
-        source={image}
-        style={{ width: "100%", resizeMode: "contain" }}
-        className={`rounded-lg`}
+        source={typeof image === 'string' ? { uri: image } : image}
+        style={{ width: '100%', resizeMode: 'cover' }}
+        className={`rounded-lg h-[150]`}
       />
-      <View className="items-center my-3" style={{ flexDirection: "row" }}>
-        <Text className="font-semibold text-lg">{title}</Text>
-        <View style={{ marginLeft: "auto" }}>
-          <View className="items-center" style={{ flexDirection: "row" }}>
-            <Route />
-            <Text className="ml-1">{place}</Text>
+      <View className="items-center mt-[10]" style={{ flexDirection: 'row' }}>
+        <Text
+          className="font-semibold text-xl"
+          style={{ ...TextStyle.semibold17 }}
+        >
+          {title}
+        </Text>
+        <View style={{ marginLeft: 'auto' }}>
+          <View className="items-end" style={{ flexDirection: 'row' }}>
+            <RouteSvg width={22} height={22} />
+            <Text className="ml-1" style={{ ...TextStyle.semibold10 }}>
+              {place}
+            </Text>
           </View>
         </View>
       </View>
-      <Text className="text-[#9DA0A5]">{time}</Text>
+      <Text
+        className="text-ink-secondary mt-[5]"
+        style={{ ...TextStyle.regular10 }}
+      >
+        {time}
+      </Text>
     </View>
   );
 }

@@ -10,8 +10,9 @@ import { TextInputWithLabel } from '../../components/Input';
 import DateInputWithLabel from '../../components/Input/DateInputWithLabel';
 import PickerWithLabel from '../../components/Picker';
 import BaseButton from '../../components/Button/BaseButton';
+import { FIRST_PLAN } from '../../constants/db';
 
-const CreatePlanScreen = () => {
+const CreatePlanScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
 
   return (
@@ -21,33 +22,43 @@ const CreatePlanScreen = () => {
         style={{ paddingTop: headerHeight + 20, paddingHorizontal: 20 }}
       >
         <View className={`justify-start`} style={{ rowGap: 20 }}>
-          <TextInputWithLabel label={'Name'} placeholder={'Enter name'} />
+          <TextInputWithLabel
+            label={'Tiêu đề'}
+            placeholder={'Nhập tiêu đề vào nè'}
+          />
           <View
             className={`flex-row justify-between`}
             style={{ columnGap: 20 }}
           >
             <View className={`flex-1`}>
-              <DateInputWithLabel label={'From'} />
+              <DateInputWithLabel label={'Ngày bắt đầu'} />
             </View>
             <View className={`flex-1`}>
-              <DateInputWithLabel label={'To'} />
+              <DateInputWithLabel label={'Ngày kết thúc'} />
             </View>
           </View>
           <PickerWithLabel
-            label={'Place'}
+            label={'Địa điểm'}
             items={[
-              { label: 'Football', value: 'football' },
-              { label: 'Baseball', value: 'baseball' },
-              { label: 'Hockey', value: 'hockey' },
+              { label: 'Hội An', value: 'football' },
+              { label: 'TP. Hồ Chí Minh', value: 'baseball' },
+              { label: 'Lâm Đồng', value: 'hockey' },
             ]}
-            placeholder={{ label: 'Choose city', value: null }}
+            placeholder={{ label: 'Chọn thành phố', value: null }}
           />
           <TextInputWithLabel
-            label={'Description'}
-            placeholder={'Description goes here'}
+            label={'Mô tả'}
+            placeholder={'Mô tả nhập ở đây nè'}
             multiline={true}
           />
-          <BaseButton title={'Create'} />
+          <BaseButton
+            title={'Tạo mới'}
+            onPress={() =>
+              navigation.navigate('IndividualPlan', {
+                plan: JSON.stringify(FIRST_PLAN),
+              })
+            }
+          />
         </View>
       </ScrollView>
     </TouchableWithoutFeedback>

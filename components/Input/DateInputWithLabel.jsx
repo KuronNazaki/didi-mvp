@@ -10,9 +10,11 @@ import {
   Text,
   View,
 } from 'react-native';
-import { GLOBAL_COLORS } from '../../constants/global';
+import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
+
+const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES)
 
 const DateInputWithLabel = ({ label }) => {
   const tabBarHeight = useBottomTabBarHeight();
@@ -37,14 +39,14 @@ const DateInputWithLabel = ({ label }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Text className={`text-xl font-[Inter-Bold] text-primary`}>{label}</Text>
+      <Text className={`text-ink-primary`} style={{...TextStyle.semibold15}}>{label}</Text>
       <Pressable
-        className={`mt-3 py-4 px-5 rounded-lg bg-[#EFF3F4]`}
+        className={`mt-3 py-4 px-5 rounded-lg bg-ink-senary`}
         onPress={() => setModalVisible(true)}
       >
         <Text
-          className={`text-lg font-[Inter-Regular]`}
-          style={{ lineHeight: 20 }}
+        className={`text-ink-primary`}
+          style={{ ...TextStyle.regular10 }}
         >
           {date.toLocaleDateString()}
         </Text>
@@ -84,7 +86,7 @@ const DateInputWithLabel = ({ label }) => {
                 shadowRadius: 10,
                 elevation: 5,
               }}
-              className={`bg-white items-end p-5`}
+              className={`bg-ink-white items-end p-5`}
             >
               <Pressable
                 style={{
@@ -95,7 +97,8 @@ const DateInputWithLabel = ({ label }) => {
                 onPress={() => setModalVisible(!modalVisible)}
               >
                 <Text
-                  className={`text-lg font-[Inter-Medium] text-accent-blue`}
+                  className={`text-accent-blue100`}
+                  style={{...GLOBAL_TEXT_STYLES.regular15}}
                 >
                   Hide
                 </Text>
@@ -109,7 +112,7 @@ const DateInputWithLabel = ({ label }) => {
                   onChange={onChange}
                   display={'inline'}
                   themeVariant={'light'}
-                  accentColor={GLOBAL_COLORS['accent-blue']}
+                  accentColor={GLOBAL_COLORS.ACCENT.blue100}
                 />
               )}
             </View>
