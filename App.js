@@ -5,7 +5,7 @@ import HomeScreen from './screens/HomeScreen';
 import PlannerScreen from './screens/PlannerScreen';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import Svg from './constants/svg';
 import ProfileScreen from './screens/ProfileScreen';
 import {
@@ -13,63 +13,159 @@ import {
   GLOBAL_TEXT_STYLES,
   fontOffset,
 } from './constants/global';
+import CommunityScreen from './screens/CommunityScreen';
+import SettingScreen from './screens/SettingScreen';
+import GetStartedScreen from './screens/GetStartedScreen';
+import LoginScreen from './screens/LoginScreen';
+import SignupScreen from './screens/SignupScreen';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { createContext, useEffect, useMemo, useReducer, useState } from 'react';
+import AuthContext from './misc/AuthContext';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [state, dispatch] = useReducer(
+    (prevState, action) => {
+      switch (action.type) {
+        case 'RESTORE_TOKEN':
+          return {
+            ...prevState,
+            userToken: action.token,
+            isLoading: false,
+          };
+        case 'SIGN_IN':
+          return {
+            ...prevState,
+            isSignout: false,
+            userToken: action.token,
+          };
+        case 'SIGN_OUT':
+          return {
+            ...prevState,
+            isSignout: true,
+            userToken: null,
+          };
+      }
+    },
+    {
+      isLoading: true,
+      isSignout: false,
+      userToken: null,
+    }
+  );
+
+  useEffect(() => {
+    const bootstrapAsync = async () => {
+      let userToken;
+
+      try {
+        userToken = await AsyncStorage.getItem('@userToken');
+      } catch (exception) {
+        console.log(exception);
+      }
+
+      dispatch({ type: 'RESTORE_TOKEN', token: userToken });
+    };
+
+    bootstrapAsync();
+  }, []);
+
+  const authContext = useMemo(
+    () => ({
+      signIn: async (data) => {
+        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+      },
+      signOut: () => dispatch({ type: 'SIGN_OUT' }),
+      signUp: async (data) => {
+        dispatch({ type: 'SIGN_IN', token: 'dummy-auth-token' });
+      },
+    }),
+    []
+  );
+
   return (
-    <>
+    <AuthContext.Provider value={authContext}>
       <NavigationContainer>
         <StatusBar style="auto" />
-        <Tab.Navigator
-          screenOptions={({ route }) => ({
-            tabBarStyle: { position: 'absolute' },
-            tabBarBackground: () => (
-              <BlurView
-                tint="light"
-                intensity={80}
-                style={{ ...StyleSheet.absoluteFill }}
+        {state.userToken == null ? (
+          <Stack.Navigator>
+            <Stack.Screen
+              name="GetStarted"
+              component={GetStartedScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Login"
+              component={LoginScreen}
+              options={{ headerShown: false }}
+            />
+            <Stack.Screen
+              name="Signup"
+              component={SignupScreen}
+              options={{ headerShown: false }}
+            />
+          </Stack.Navigator>
+        ) : (
+          <Tab.Navigator
+            screenOptions={({ route }) => ({
+              tabBarStyle: { position: 'absolute' },
+              tabBarBackground: () => (
+                <BlurView
+                  tint="light"
+                  intensity={80}
+                  style={{ ...StyleSheet.absoluteFill }}
+                />
+              ),
+              tabBarIcon: ({ focused, size, color }) => {
+                return Svg[route.name] && Svg[route.name](size, color);
+              },
+              tabBarLabelStyle: {
+                ...GLOBAL_TEXT_STYLES.semibold10,
+                fontSize: fontOffset + 6,
+              },
+              tabBarActiveTintColor: GLOBAL_COLORS.ACCENT.blue100,
+              tabBarInactiveTintColor: GLOBAL_COLORS.ACCENT.blue50,
+            })}
+          >
+            <Tab.Group>
+              <Tab.Screen
+                name="Home"
+                component={HomeScreen}
+                options={{
+                  title: 'Trang chủ',
+                  headerTitle: '',
+                  headerBackground: () => (
+                    <BlurView
+                      tint="light"
+                      intensity={20}
+                      style={StyleSheet.absoluteFill}
+                    />
+                  ),
+                  headerTransparent: true,
+                }}
               />
-            ),
-            tabBarIcon: ({ focused, size, color }) => {
-              return Svg[route.name] && Svg[route.name](size, color);
-            },
-            tabBarLabelStyle: {
-              ...GLOBAL_TEXT_STYLES.semibold10,
-              fontSize: fontOffset + 6,
-            },
-            tabBarActiveTintColor: GLOBAL_COLORS.ACCENT.blue100,
-            tabBarInactiveTintColor: GLOBAL_COLORS.ACCENT.blue50,
-          })}
-        >
-          <Tab.Group>
-            <Tab.Screen
-              name="Home"
-              component={HomeScreen}
-              options={{
-                title: 'Trang chủ',
-                headerTitle: '',
-                headerBackground: () => (
-                  <BlurView
-                    tint="light"
-                    intensity={20}
-                    style={StyleSheet.absoluteFill}
-                  />
-                ),
-                headerTransparent: true,
-              }}
-            />
-            <Tab.Screen
-              name="Planner"
-              component={PlannerScreen}
-              options={{
-                title: 'Lịch trình',
-                headerShown: false,
-                headerTransparent: true,
-                headerTitle: '',
-              }}
-            />
-            <Tab.Screen
+              <Tab.Screen
+                name="Planner"
+                component={PlannerScreen}
+                options={({ route }) => {
+                  return {
+                    title: 'Lịch trình',
+                    headerBackground: () => (
+                      <BlurView
+                        tint="light"
+                        intensity={20}
+                        style={StyleSheet.absoluteFill}
+                      />
+                    ),
+                    headerTransparent: true,
+                    headerShown: false,
+                    headerTitle: ''
+                  };
+                }}
+              />
+              {/* <Tab.Screen
               name="Profile"
               component={ProfileScreen}
               options={{
@@ -84,10 +180,48 @@ export default function App() {
                 ),
                 headerTransparent: true,
               }}
-            />
-          </Tab.Group>
-        </Tab.Navigator>
+            /> */}
+              <Tab.Screen
+                name="Community"
+                component={CommunityScreen}
+                options={{
+                  title: 'Cộng đồng',
+                  headerTitle: '',
+                  headerBackground: () => (
+                    <BlurView
+                      tint="light"
+                      intensity={20}
+                      style={StyleSheet.absoluteFill}
+                    />
+                  ),
+                  headerTransparent: true,
+                  headerShown: false,
+                    headerTitle: ''
+                }}
+              />
+              <Tab.Screen
+                name="Setting"
+                component={SettingScreen}
+                options={{
+                  title: 'Tuỳ chỉnh',
+                  headerTitle: 'Tuỳ chỉnh',
+                  headerTitleStyle: {
+                    ...GLOBAL_TEXT_STYLES.semibold13,
+                  },
+                  headerBackground: () => (
+                    <BlurView
+                      tint="light"
+                      intensity={20}
+                      style={StyleSheet.absoluteFill}
+                    />
+                  ),
+                  headerTransparent: true,
+                }}
+              />
+            </Tab.Group>
+          </Tab.Navigator>
+        )}
       </NavigationContainer>
-    </>
+    </AuthContext.Provider>
   );
 }

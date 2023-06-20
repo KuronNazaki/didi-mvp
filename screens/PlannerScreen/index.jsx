@@ -1,7 +1,9 @@
 import {
+  ActivityIndicator,
   Button,
   Modal,
   Pressable,
+  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -18,11 +20,10 @@ import ChooseTypeScreen from '../ChooseTypeScreen';
 import { BlurView } from 'expo-blur';
 import CreatePlanScreen from '../CreatePlanScreen';
 import IndividualPlanScreen from '../IndividualPlanScreen';
-import Card from '../../components/Card';
+import { Card, PlannerCard } from '../../components/Card';
 
-import Halong from './../../assets/halong.png';
 import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import DetailedPlaceScreen from '../DetailedPlaceScreen';
 
@@ -32,9 +33,21 @@ const PlannerMainScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
   const [modalVisible, setModalVisible] = useState(false);
+  const [listOfPlans, setListOfPlans] = useState([]);
+  const [isDataLoaded, setIsDataLoaded] = useState(false);
+
+  useEffect(() => {
+    const fetchListOfPlans = async () => {
+      const response = await fetch('https://didimvp.wiremockapi.cloud/plans');
+      const data = await response.json();
+      setListOfPlans(data);
+      setIsDataLoaded(true);
+    };
+    fetchListOfPlans();
+  }, []);
 
   return (
-    <View className={`w-full h-full bg-ink-white`} style={{}}>
+    <View className={`w-full h-full bg-ink-white`}>
       <ScrollView className={`h-full overflow-visible`}>
         <View
           className={`h-full p-5`}
@@ -44,7 +57,7 @@ const PlannerMainScreen = ({ navigation }) => {
           }}
         >
           <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
-            <StyledImage relativeSrc={require('./../../assets/avatar.png')} />
+            <StyledImage relativeSrc={'https://scontent-sin6-2.xx.fbcdn.net/v/t39.30808-6/211708785_1021110078629169_7079489300693582216_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=3RkIaVQQbekAX9A031I&_nc_ht=scontent-sin6-2.xx&oh=00_AfDn6s4OFGrCRppHw2-NsyxVIBLWA_p-6osUSu5XTFKMRQ&oe=64889164'} />
             <View>
               <Text
                 className={`text-ink-secondary`}
@@ -56,7 +69,7 @@ const PlannerMainScreen = ({ navigation }) => {
                 className={`text-ink-primary`}
                 style={{ ...GLOBAL_TEXT_STYLES.semibold16 }}
               >
-                George Miller
+                Huỳnh Huy
               </Text>
             </View>
           </View>
@@ -67,34 +80,25 @@ const PlannerMainScreen = ({ navigation }) => {
             >
               Lịch trình của bạn
             </Text>
-            <Card
-              title="Hạ Long trong tôi"
-              place="Hạ Long"
-              image={Halong}
-              time="Feb 23, 2023 → Feb 25, 2023"
-              fullWidth
-            />
-            <Card
-              title="Hạ Long trong tôi"
-              place="Hạ Long"
-              image={Halong}
-              time="Feb 23, 2023 → Feb 25, 2023"
-              fullWidth
-            />
-            <Card
-              title="Hạ Long trong tôi"
-              place="Hạ Long"
-              image={Halong}
-              time="Feb 23, 2023 → Feb 25, 2023"
-              fullWidth
-            />
-            <Card
-              title="Hạ Long trong tôi"
-              place="Hạ Long"
-              image={Halong}
-              time="Feb 23, 2023 → Feb 25, 2023"
-              fullWidth
-            />
+            <View className={`mt-[10]`}>
+              {isDataLoaded ? listOfPlans.map((item, index) => (
+                <PlannerCard
+                  key={index}
+                  title={item.title}
+                  location={item.location}
+                  image={item?.imageUrl}
+                  startDate={new Date(item.startDate)}
+                  endDate={new Date(item.endDate)}
+                  description={item.planDescription}
+                  fullWidth
+                  onPress={() => {
+                    navigation.navigate('IndividualPlan', {
+                      plan: JSON.stringify(item),
+                    });
+                  }}
+                />
+              )) : <ActivityIndicator />}
+            </View>
           </View>
         </View>
       </ScrollView>
@@ -197,13 +201,16 @@ export default function PlannerScreen() {
   return (
     <Stack.Navigator>
       <Stack.Group
-        screenOptions={{ headerTransparent: true, headerBlurEffect: true }}
+        screenOptions={{
+          headerTransparent: true,
+        }}
       >
         <Stack.Screen
           name="PlannerMain"
           component={PlannerMainScreen}
           options={{
             headerTitle: '',
+            headerBlurEffect: true,
           }}
         />
         <Stack.Screen
@@ -236,6 +243,7 @@ export default function PlannerScreen() {
               ...GLOBAL_TEXT_STYLES.semibold10,
               color: GLOBAL_COLORS.INK.primary,
             },
+            headerBlurEffect: true,
             headerTintColor: GLOBAL_COLORS.INK.primary,
             headerLeft: () => (
               <TouchableOpacity onPress={() => navigation.goBack()}>
@@ -253,11 +261,13 @@ export default function PlannerScreen() {
           component={IndividualPlanScreen}
           options={({ navigation }) => ({
             headerTitle: '',
+            presentation: 'fullScreenModal',
             headerTitleStyle: {
               ...GLOBAL_TEXT_STYLES.semibold10,
               color: GLOBAL_COLORS.INK.primary,
             },
             headerTintColor: GLOBAL_COLORS.INK.primary,
+            headerShown: false,
             headerLeft: () => (
               <TouchableOpacity onPress={() => navigation.goBack()}>
                 <ArrowLeftSvg
@@ -267,7 +277,6 @@ export default function PlannerScreen() {
                 />
               </TouchableOpacity>
             ),
-            headerShown: false,
           })}
         />
         <Stack.Screen

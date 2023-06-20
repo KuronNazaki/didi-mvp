@@ -22,6 +22,9 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { EXAMPLES } from '../../constants/db';
 
+const defaultUri = '../../assets/avatar.png';
+const DEFAULT_IMAGE = Image.resolveAssetSource(require(defaultUri)).uri;
+
 const DateButton = ({
   keyProp,
   title,
@@ -98,22 +101,24 @@ const IndividualPlanScreen = ({ navigation, route }) => {
   const schedule = EXAMPLES[0].schedule;
 
   useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: {
-        display: 'none',
-      },
-    });
-    return () =>
-      navigation.getParent()?.setOptions({
-        tabBarStyle: undefined,
-      });
+    // navigation.getParent()?.setOptions({
+    //   tabBarStyle: {
+    //     display: 'none',
+    //   },
+    // });
+    // return () =>
+    //   navigation.getParent()?.setOptions({
+    //     tabBarStyle: {
+    //       display: 'flex',
+    //     },
+    //   });
   }, [navigation]);
 
   const diff =
     (new Date(deserializedPlan.endDate) -
       new Date(deserializedPlan.startDate)) /
     (1000 * 60 * 60 * 24);
-  console.log(diff + 1);
+  // console.log(diff + 1);
 
   return (
     <View className={`w-full h-full bg-white`}>
@@ -125,14 +130,18 @@ const IndividualPlanScreen = ({ navigation, route }) => {
             style={{ elevation: 1, zIndex: -10 }}
           >
             <Image
-              source={require('./../../assets/avatar.png')}
+              source={{
+                uri: deserializedPlan.imageUrl
+                  ? deserializedPlan.imageUrl
+                  : DEFAULT_IMAGE,
+              }}
               style={{ resizeMode: 'cover' }}
               className={`w-full h-full`}
             />
-            <View className={`absolute bottom-0 left-0 px-5 py-8`}>
+            <View className={`w-full absolute bottom-0 left-0 px-5 py-8`}>
               <Text
                 style={{ ...GLOBAL_TEXT_STYLES.bold28 }}
-                className={`w-4/5 text-ink-white`}
+                className={`w-11/12 text-ink-white`}
               >
                 {deserializedPlan.title}
               </Text>
@@ -256,7 +265,7 @@ const IndividualPlanScreen = ({ navigation, route }) => {
               <View style={{ rowGap: 20 }} className={`mt-5`}>
                 <PlacePanel
                   navigation={navigation}
-                  placeArray={schedule}
+                  placeArray={deserializedPlan.schedule}
                   currentDay={currentDay}
                 />
               </View>

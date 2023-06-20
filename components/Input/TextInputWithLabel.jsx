@@ -11,11 +11,18 @@ import { GLOBAL_TEXT_STYLES } from '../../constants/global';
 
 const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
 
-const TextInputWithLabel = ({ label, placeholder = '', multiline = false, value, onValueChange }) => {
+const TextInputWithLabel = ({
+  type = 'default',
+  label,
+  placeholder = '',
+  multiline = false,
+  value,
+  onValueChange,
+}) => {
   // const [value, onValueChange] = useState('');
 
   return (
-    <View style={{ flex: 1 }}>
+    <View>
       <Text className={`text-ink-primary`} style={{ ...TextStyle.semibold15 }}>
         {label}
       </Text>
@@ -24,9 +31,10 @@ const TextInputWithLabel = ({ label, placeholder = '', multiline = false, value,
           value={value}
           onChangeText={onValueChange}
           placeholder={placeholder}
-          keyboardType="default"
+          keyboardType={type === 'email' ? 'email-address' : 'default'}
+          secureTextEntry={type === 'password'}
           className={`text-ink-primary`}
-          style={{...TextStyle.regular10}}
+          style={{ ...TextStyle.regular10 }}
           multiline={multiline}
         />
       </View>

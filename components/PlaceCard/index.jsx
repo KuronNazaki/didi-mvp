@@ -10,9 +10,9 @@ const DEFAULT_IMAGE = Image.resolveAssetSource(require(uri)).uri;
 const PlaceCard = ({ place = {}, onPress }) => {
   const {
     name = 'N/A',
-    placeLocation = 'N/A',
+    location = 'N/A',
     openingTime = null,
-    placeDescription = 'N/A',
+    description = 'N/A',
     rating = 'N/A',
     imageUrl = DEFAULT_IMAGE,
   } = place;
@@ -69,7 +69,7 @@ const PlaceCard = ({ place = {}, onPress }) => {
               style={{ ...GLOBAL_TEXT_STYLES.regular10 }}
               className={`text-ink-secondary mt-1`}
             >
-              {placeLocation}
+              {location}
             </Text>
           </View>
           <View
@@ -102,7 +102,7 @@ const PlaceCard = ({ place = {}, onPress }) => {
               ...GLOBAL_TEXT_STYLES.regularitalic10,
             }}
           >
-            {placeDescription}
+            {description}
           </Text>
         </View>
       </View>

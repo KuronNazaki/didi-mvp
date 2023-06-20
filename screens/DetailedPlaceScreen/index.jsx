@@ -24,8 +24,8 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
   }
   const {
     name,
-    placeDescription,
-    placeLocation,
+    description,
+    location,
     phoneNumber,
     rating,
     openingTime,
@@ -34,9 +34,9 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
   } = deserializedPlace;
 
   const [nameState, setNameState] = useState(name);
-  const [placeLocationState, setPlaceLocationState] = useState(placeLocation);
+  const [placeLocationState, setPlaceLocationState] = useState(location);
   const [phoneNumberState, setPhoneNumberState] = useState(phoneNumber);
-  const [descriptionState, setDescriptionState] = useState(placeDescription);
+  const [descriptionState, setDescriptionState] = useState(description);
 
   return (
     <ScrollView className={'h-full w-full'}>
