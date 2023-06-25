@@ -14,18 +14,21 @@ import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 
-const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES)
+const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
 
-const DateInputWithLabel = ({ label }) => {
+const DateInputWithLabel = ({ label, value = new Date(), onValueChange }) => {
   const tabBarHeight = useBottomTabBarHeight();
 
-  const [date, setDate] = useState(new Date());
+  const [date, setDate] = useState(value);
   const [mode, setMode] = useState('date');
   const [show, setShow] = useState(true);
   const [modalVisible, setModalVisible] = useState(false);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
+    if (onValueChange) {
+      onValueChange(currentDate);
+    }
     setDate(currentDate);
   };
 
@@ -39,15 +42,14 @@ const DateInputWithLabel = ({ label }) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <Text className={`text-ink-primary`} style={{...TextStyle.semibold15}}>{label}</Text>
+      <Text className={`text-ink-primary`} style={{ ...TextStyle.semibold15 }}>
+        {label}
+      </Text>
       <Pressable
         className={`mt-3 py-4 px-5 rounded-lg bg-ink-senary`}
         onPress={() => setModalVisible(true)}
       >
-        <Text
-        className={`text-ink-primary`}
-          style={{ ...TextStyle.regular10 }}
-        >
+        <Text className={`text-ink-primary`} style={{ ...TextStyle.regular10 }}>
           {date.toLocaleDateString()}
         </Text>
       </Pressable>
@@ -98,7 +100,7 @@ const DateInputWithLabel = ({ label }) => {
               >
                 <Text
                   className={`text-accent-blue100`}
-                  style={{...GLOBAL_TEXT_STYLES.regular15}}
+                  style={{ ...GLOBAL_TEXT_STYLES.regular15 }}
                 >
                   Hide
                 </Text>

@@ -164,7 +164,11 @@ const IndividualPlanScreen = ({ navigation, route }) => {
             <TouchableOpacity onPress={() => navigation.goBack()}>
               <ArrowLeftSvg width={30} height={30} color={'white'} />
             </TouchableOpacity>
-            <EditSvg width={30} height={30} color={'white'} />
+            <TouchableOpacity
+              onPress={() => navigation.navigate('EditIndividualPlan')}
+            >
+              <EditSvg width={30} height={30} color={'white'} />
+            </TouchableOpacity>
           </SafeAreaView>
           <View className={`w-full p-5`}>
             <View>
@@ -260,7 +264,10 @@ const IndividualPlanScreen = ({ navigation, route }) => {
                 </View>
               </ScrollView>
               <View className={`mt-5`}>
-                <DashButton title={'Thêm địa điểm, khách sạn,...'} />
+                <DashButton
+                  title={'Thêm địa điểm, khách sạn,...'}
+                  onPress={() => navigation.navigate('CreateDetailedPlace')}
+                />
               </View>
               <View style={{ rowGap: 20 }} className={`mt-5`}>
                 <PlacePanel

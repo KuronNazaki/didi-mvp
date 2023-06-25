@@ -16,6 +16,8 @@ import Halong from './../../assets/halong.png';
 import { GLOBAL_TEXT_STYLES } from '../../constants/global';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { MAYBE_YOU_LIKE, POPULAR } from '../../constants/db';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DEFAULT_IMAGE } from '../../constants/images';
 
 const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
 
@@ -23,7 +25,18 @@ export default function HomeScreen({ navigation }) {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
 
+  useEffect(() => {
+    const getUser = async () => {
+      const stringData = await AsyncStorage.getItem('@userToken');
+      const parsedData = JSON.parse(stringData);
+      console.log(JSON.parse(stringData));
+      setUser(parsedData);
+    };
+    getUser();
+  }, []);
+
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [user, setUser] = useState({});
 
   useEffect(() => {
     let timeout;
@@ -49,7 +62,9 @@ export default function HomeScreen({ navigation }) {
           }}
         >
           <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
-            <StyledImage relativeSrc={'https://scontent-sin6-2.xx.fbcdn.net/v/t39.30808-6/211708785_1021110078629169_7079489300693582216_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=3RkIaVQQbekAX9A031I&_nc_ht=scontent-sin6-2.xx&oh=00_AfDn6s4OFGrCRppHw2-NsyxVIBLWA_p-6osUSu5XTFKMRQ&oe=64889164'} />
+            <StyledImage
+              relativeSrc={user.imageUrl ? user.imageUrl : DEFAULT_IMAGE}
+            />
             <View>
               <Text
                 className={`text-ink-secondary`}
@@ -61,7 +76,7 @@ export default function HomeScreen({ navigation }) {
                 className={`text-ink-primary`}
                 style={{ ...TextStyle.semibold16 }}
               >
-                Huỳnh Huy
+                {user?.name}
               </Text>
             </View>
           </View>
@@ -169,7 +184,7 @@ export default function HomeScreen({ navigation }) {
             <></>
           )}
           <Pressable
-            className="bg-[#537FE7] w-80 h-10 rounded-xl justify-center"
+            className="bg-[#98B2F1] w-80 h-10 rounded-xl justify-center"
             onPress={toggleModal}
           >
             <Text className="text-center text-white font-semibold text-base">

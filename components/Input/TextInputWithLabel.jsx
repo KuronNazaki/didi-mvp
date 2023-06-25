@@ -18,8 +18,8 @@ const TextInputWithLabel = ({
   multiline = false,
   value,
   onValueChange,
+  disabled = false
 }) => {
-  // const [value, onValueChange] = useState('');
 
   return (
     <View>
@@ -36,6 +36,7 @@ const TextInputWithLabel = ({
           className={`text-ink-primary`}
           style={{ ...TextStyle.regular10 }}
           multiline={multiline}
+          editable={!disabled}
         />
       </View>
     </View>

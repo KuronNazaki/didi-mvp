@@ -1,46 +1,20 @@
-import React, { useState } from 'react';
-import {
-  Image,
-  Keyboard,
-  Pressable,
-  ScrollView,
-  Text,
-  TouchableWithoutFeedback,
-  View,
-} from 'react-native';
+import React, { useState } from 'react'
+import { Image, Keyboard } from 'react-native';
+import { ScrollView, TouchableWithoutFeedback, View } from 'react-native';
 import { TextInputWithLabel } from '../../components/Input';
 import { BaseButton } from '../../components/Button';
-import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
-import StarSvg from '../../assets/star.svg';
 
 const uri = './../../assets/avatar.png';
 const DEFAULT_IMAGE = Image.resolveAssetSource(require(uri)).uri;
 
-const DetailedPlaceScreen = ({ navigation, route }) => {
-  const { place } = route.params;
-  let deserializedPlace = {};
-  if (typeof place === 'string') {
-    deserializedPlace = JSON.parse(place);
-  }
-  const {
-    name,
-    description,
-    location,
-    phoneNumber,
-    rating,
-    openingTime,
-    planningTime,
-    imageUrl,
-  } = deserializedPlace;
+const CreateDetailedPlaceScreen = () => {
+	const [nameState, setNameState] = useState('');
+  const [placeLocationState, setPlaceLocationState] = useState('');
+  const [phoneNumberState, setPhoneNumberState] = useState('');
+  const [descriptionState, setDescriptionState] = useState('');
 
-  const [nameState, setNameState] = useState(name);
-  const [placeLocationState, setPlaceLocationState] = useState(location);
-  const [phoneNumberState, setPhoneNumberState] = useState(phoneNumber);
-  const [descriptionState, setDescriptionState] = useState(description);
-  const [imageUrlState, setImageUrlState] = useState(imageUrl);
-
-  return (
-    <ScrollView className={'h-full w-full'}>
+	return (
+		<ScrollView className={'h-full w-full'}>
       <TouchableWithoutFeedback
         className={`w-full h-full`}
         onPress={Keyboard.dismiss}
@@ -51,11 +25,10 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
             <View className={`w-full h-[300]`}>
               <Image
                 className={`w-full h-full`}
-                source={{ uri: imageUrl ? imageUrl : DEFAULT_IMAGE }}
+                source={{ uri: DEFAULT_IMAGE }}
                 style={{ resizeMode: 'cover' }}
               />
             </View>
-
             <View className="bg-ink-white p-5">
               {/* <View className="flex-row items-end">
                 <Text className="text-[#55555e] text-3xl font-bold">
@@ -94,17 +67,11 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
               </Text> */}
               <View className={``} style={{ rowGap: 20 }}>
                 <TextInputWithLabel
-                  label={'Đường dẫn ảnh'}
-                  placeholder={'Đường dẫn ảnh'}
-                  value={imageUrlState}
-                  onValueChange={setImageUrlState}
-                  multiline
-                />
-                <TextInputWithLabel
                   label={'Tên'}
                   placeholder={'Tên'}
                   value={nameState}
                   onValueChange={setNameState}
+									multiline
                 />
                 <TextInputWithLabel
                   label={'Mô tả'}
@@ -125,10 +92,11 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
                   placeholder="Số điện thoại"
                   value={phoneNumberState}
                   onValueChange={setPhoneNumberState}
+									multiline
                 />
                 <TextInputWithLabel
                   label={'Ghi chú'}
-                  multiline={true}
+                  multiline
                   placeholder="Ghi chú ở đây"
                 />
               </View>
@@ -140,7 +108,7 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
         </View>
       </TouchableWithoutFeedback>
     </ScrollView>
-  );
-};
+	)
+}
 
-export default DetailedPlaceScreen;
+export default CreateDetailedPlaceScreen

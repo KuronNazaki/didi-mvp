@@ -11,17 +11,17 @@
 	<defs>
 		<linearGradient id="paint0_linear_3_64" x1="15.9271" y1="-0.240713" x2="16.704" y2="15.174"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#537FE7" />
+			<stop stop-color="#98B2F1" />
 			<stop offset="1" stop-color="#2A66F2" />
 		</linearGradient>
 		<linearGradient id="paint1_linear_3_64" x1="9.5167" y1="4.00667" x2="12.4244" y2="25.5794"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#537FE7" />
+			<stop stop-color="#98B2F1" />
 			<stop offset="1" stop-color="#2A66F2" />
 		</linearGradient>
 		<linearGradient id="paint2_linear_3_64" x1="19.1261" y1="4.00667" x2="22.0338" y2="25.5794"
 			gradientUnits="userSpaceOnUse">
-			<stop stop-color="#537FE7" />
+			<stop stop-color="#98B2F1" />
 			<stop offset="1" stop-color="#2A66F2" />
 		</linearGradient>
 	</defs>

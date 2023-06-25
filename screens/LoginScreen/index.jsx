@@ -55,7 +55,18 @@ const LoginScreen = ({ navigation }) => {
             />
             <BaseButton
               title={'Đăng nhập'}
-              onPress={() => signIn({ username: 'nah', password: 'nah' })}
+              onPress={() =>
+                signIn({
+                  email: email,
+                  password: password,
+                  name: 'Huỳnh Hoàng Huy',
+                  bio: 'Thích đi đây đi đó, khám phá nhiều nơi mà chưa từng đặt chân tới',
+                  isPremium: true,
+                  token: 'huynhhuy2002',
+                  imageUrl:
+                    'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2942&q=80',
+                })
+              }
             />
             <View className={`w-full flex-row items-center justify-center`}>
               <Text

@@ -26,6 +26,10 @@ import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
 import { useEffect, useState } from 'react';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import DetailedPlaceScreen from '../DetailedPlaceScreen';
+import CreateDetailedPlaceScreen from '../CreateDetailedPlaceScreen';
+import EditIndividualPlanScreen from '../EditIndividualPlanScreen';
+import { DEFAULT_IMAGE } from '../../constants/images';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Stack = createNativeStackNavigator();
 
@@ -35,6 +39,7 @@ const PlannerMainScreen = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [listOfPlans, setListOfPlans] = useState([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
+  const [user, setUser] = useState({})
 
   useEffect(() => {
     const fetchListOfPlans = async () => {
@@ -44,6 +49,15 @@ const PlannerMainScreen = ({ navigation }) => {
       setIsDataLoaded(true);
     };
     fetchListOfPlans();
+  }, []);
+
+  useEffect(() => {
+    const getUser = async () => {
+      const stringData = await AsyncStorage.getItem('@userToken');
+      const parsedData = JSON.parse(stringData);
+      setUser(parsedData);
+    };
+    getUser();
   }, []);
 
   return (
@@ -57,7 +71,7 @@ const PlannerMainScreen = ({ navigation }) => {
           }}
         >
           <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
-            <StyledImage relativeSrc={'https://scontent-sin6-2.xx.fbcdn.net/v/t39.30808-6/211708785_1021110078629169_7079489300693582216_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=3RkIaVQQbekAX9A031I&_nc_ht=scontent-sin6-2.xx&oh=00_AfDn6s4OFGrCRppHw2-NsyxVIBLWA_p-6osUSu5XTFKMRQ&oe=64889164'} />
+            <StyledImage relativeSrc={user.imageUrl ? user.imageUrl : DEFAULT_IMAGE} />
             <View>
               <Text
                 className={`text-ink-secondary`}
@@ -69,7 +83,7 @@ const PlannerMainScreen = ({ navigation }) => {
                 className={`text-ink-primary`}
                 style={{ ...GLOBAL_TEXT_STYLES.semibold16 }}
               >
-                Huỳnh Huy
+                {user?.name}
               </Text>
             </View>
           </View>
@@ -197,7 +211,7 @@ const PlannerMainScreen = ({ navigation }) => {
   );
 };
 
-export default function PlannerScreen() {
+export default function PlannerStack() {
   return (
     <Stack.Navigator>
       <Stack.Group
@@ -282,6 +296,52 @@ export default function PlannerScreen() {
         <Stack.Screen
           name="DetailedPlace"
           component={DetailedPlaceScreen}
+          options={({ navigation }) => ({
+            presentation: 'modal',
+            headerTitle: '',
+            headerTitleStyle: {
+              ...GLOBAL_TEXT_STYLES.semibold10,
+              color: GLOBAL_COLORS.INK.primary,
+            },
+            headerTintColor: GLOBAL_COLORS.INK.primary,
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <ArrowLeftSvg
+                  width={30}
+                  height={30}
+                  color={GLOBAL_COLORS.ACCENT.blue100}
+                />
+              </TouchableOpacity>
+            ),
+            headerShown: false,
+          })}
+        />
+        <Stack.Screen
+          name="CreateDetailedPlace"
+          component={CreateDetailedPlaceScreen}
+          options={({ navigation }) => ({
+            presentation: 'modal',
+            headerTitle: '',
+            headerTitleStyle: {
+              ...GLOBAL_TEXT_STYLES.semibold10,
+              color: GLOBAL_COLORS.INK.primary,
+            },
+            headerTintColor: GLOBAL_COLORS.INK.primary,
+            headerLeft: () => (
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <ArrowLeftSvg
+                  width={30}
+                  height={30}
+                  color={GLOBAL_COLORS.ACCENT.blue100}
+                />
+              </TouchableOpacity>
+            ),
+            headerShown: false,
+          })}
+        />
+        <Stack.Screen
+          name="EditIndividualPlan"
+          component={EditIndividualPlanScreen}
           options={({ navigation }) => ({
             presentation: 'modal',
             headerTitle: '',

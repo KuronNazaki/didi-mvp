@@ -42,7 +42,7 @@ const GLOBAL_COLORS = {
       end: '#BFD1FB',
     },
     darkblue100: {
-      start: '#4297FE',
+      start: '#98B2F1',
       end: '#0055BC',
     },
     darkblue60: {

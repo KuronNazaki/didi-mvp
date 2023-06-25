@@ -1,43 +1,24 @@
 import React, { useState } from 'react';
+import PickerWithLabel from '../../components/Picker';
+import { DateInputWithLabel, TextInputWithLabel } from '../../components/Input';
 import {
-  Image,
   Keyboard,
-  Pressable,
   ScrollView,
-  Text,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import { TextInputWithLabel } from '../../components/Input';
+import { Image } from 'react-native';
 import { BaseButton } from '../../components/Button';
-import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
-import StarSvg from '../../assets/star.svg';
+import { PROVINCES } from '../../constants/province';
 
 const uri = './../../assets/avatar.png';
 const DEFAULT_IMAGE = Image.resolveAssetSource(require(uri)).uri;
 
-const DetailedPlaceScreen = ({ navigation, route }) => {
-  const { place } = route.params;
-  let deserializedPlace = {};
-  if (typeof place === 'string') {
-    deserializedPlace = JSON.parse(place);
-  }
-  const {
-    name,
-    description,
-    location,
-    phoneNumber,
-    rating,
-    openingTime,
-    planningTime,
-    imageUrl,
-  } = deserializedPlace;
-
-  const [nameState, setNameState] = useState(name);
-  const [placeLocationState, setPlaceLocationState] = useState(location);
-  const [phoneNumberState, setPhoneNumberState] = useState(phoneNumber);
-  const [descriptionState, setDescriptionState] = useState(description);
-  const [imageUrlState, setImageUrlState] = useState(imageUrl);
+const EditIndividualPlanScreen = () => {
+  const [titleState, setTitleState] = useState('');
+  const [locationState, setLocationState] = useState('');
+  const [descriptionState, setDescriptionState] = useState('');
+	const [imageUrl, setImageUrl] = useState('');
 
   return (
     <ScrollView className={'h-full w-full'}>
@@ -51,11 +32,10 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
             <View className={`w-full h-[300]`}>
               <Image
                 className={`w-full h-full`}
-                source={{ uri: imageUrl ? imageUrl : DEFAULT_IMAGE }}
+                source={{ uri: DEFAULT_IMAGE }}
                 style={{ resizeMode: 'cover' }}
               />
             </View>
-
             <View className="bg-ink-white p-5">
               {/* <View className="flex-row items-end">
                 <Text className="text-[#55555e] text-3xl font-bold">
@@ -92,19 +72,13 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
               >
                 {descriptionState}
               </Text> */}
-              <View className={``} style={{ rowGap: 20 }}>
-                <TextInputWithLabel
-                  label={'Đường dẫn ảnh'}
-                  placeholder={'Đường dẫn ảnh'}
-                  value={imageUrlState}
-                  onValueChange={setImageUrlState}
-                  multiline
-                />
-                <TextInputWithLabel
+              <View className={`justify-start`} style={{ rowGap: 20 }}>
+                {/* <TextInputWithLabel
                   label={'Tên'}
                   placeholder={'Tên'}
-                  value={nameState}
-                  onValueChange={setNameState}
+                  value={titleState}
+                  onValueChange={setTitleState}
+                  multiline
                 />
                 <TextInputWithLabel
                   label={'Mô tả'}
@@ -114,22 +88,54 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
                   multiline
                 />
                 <TextInputWithLabel
-                  label={'Địa chỉ'}
-                  placeholder="Địa chỉ"
-                  value={placeLocationState}
-                  onValueChange={setPlaceLocationState}
+                  label={'Địa điểm'}
+                  placeholder="Địa điểm"
+                  value={locationState}
+                  onValueChange={setLocationState}
                   multiline
+                /> */}
+
+                <TextInputWithLabel
+                  label={'Đường dẫn ảnh'}
+                  placeholder={'Đường dẫn ảnh'}
+									value={imageUrl}
+									onValueChange={setImageUrl}
+									multiline
                 />
                 <TextInputWithLabel
-                  label={'Số điện thoại'}
-                  placeholder="Số điện thoại"
-                  value={phoneNumberState}
-                  onValueChange={setPhoneNumberState}
+                  label={'Tiêu đề'}
+                  placeholder={'Nhập tiêu đề vào nè'}
+									value={titleState}
+									onValueChange={setTitleState}
+									multiline
+                />
+                <View
+                  className={`flex-row justify-between`}
+                  style={{ columnGap: 20 }}
+                >
+                  <View className={`flex-1`}>
+                    <DateInputWithLabel label={'Ngày bắt đầu'}  />
+                  </View>
+                  <View className={`flex-1`}>
+                    <DateInputWithLabel label={'Ngày kết thúc'} />
+                  </View>
+                </View>
+                <PickerWithLabel
+                  label={'Địa điểm'}
+                  items={Object.keys(PROVINCES).map((code) => ({
+                    label: PROVINCES[code].name,
+                    value: PROVINCES[code].name,
+                  }))}
+									value={locationState}
+									onValueChange={setLocationState}
+                  placeholder={{ label: 'Chọn thành phố', value: null }}
                 />
                 <TextInputWithLabel
-                  label={'Ghi chú'}
+                  label={'Mô tả'}
+                  placeholder={'Mô tả nhập ở đây nè'}
+									value={descriptionState}
+									onValueChange={setDescriptionState}
                   multiline={true}
-                  placeholder="Ghi chú ở đây"
                 />
               </View>
               <View className="w-full mt-6">
@@ -143,4 +149,4 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
   );
 };
 
-export default DetailedPlaceScreen;
+export default EditIndividualPlanScreen;

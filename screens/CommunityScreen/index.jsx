@@ -1,6 +1,6 @@
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { useHeaderHeight } from '@react-navigation/elements';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   SafeAreaView,
   ScrollView,
@@ -16,12 +16,24 @@ import DetailedPlaceScreen from '../DetailedPlaceScreen';
 import IndividualPlanScreen from '../IndividualPlanScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ArrowLeftSvg from './../../assets/arrow-left-1.svg';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { DEFAULT_IMAGE } from '../../constants/images';
 
 const Stack = createNativeStackNavigator();
 
 const CommunityMainScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
+  const [user, setUser] = useState({});
+
+  useEffect(() => {
+    const getUser = async () => {
+      const stringData = await AsyncStorage.getItem('@userToken');
+      const parsedData = JSON.parse(stringData);
+      setUser(parsedData);
+    };
+    getUser();
+  }, []);
 
   return (
     <View className={`w-full h-full bg-ink-white`}>
@@ -36,9 +48,7 @@ const CommunityMainScreen = ({ navigation }) => {
           <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
             <StyledImage
               size={50}
-              relativeSrc={
-                'https://scontent-sin6-2.xx.fbcdn.net/v/t39.30808-6/211708785_1021110078629169_7079489300693582216_n.jpg?_nc_cat=108&ccb=1-7&_nc_sid=09cbfe&_nc_ohc=3RkIaVQQbekAX9A031I&_nc_ht=scontent-sin6-2.xx&oh=00_AfDn6s4OFGrCRppHw2-NsyxVIBLWA_p-6osUSu5XTFKMRQ&oe=64889164'
-              }
+              relativeSrc={user.imageUrl ? user.imageUrl : DEFAULT_IMAGE}
             />
             <View>
               <Text
