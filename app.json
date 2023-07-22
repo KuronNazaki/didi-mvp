@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "didi-mvp",
+    "name": "DiDi",
     "slug": "didi-mvp",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -19,12 +19,18 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/Icon-60@3x.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.kuronnazaki.didimvp"
     },
     "web": {
       "favicon": "./assets/Icon-83.5@2x.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "803c9159-b0b7-4eb8-bbaf-8939a1951c4a"
+      }
     }
   }
 }

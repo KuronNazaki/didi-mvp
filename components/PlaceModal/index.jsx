@@ -43,7 +43,7 @@ const PlaceModal = ({ image, title, description, rate, rateNumber }) => {
               />
             </View>
             <View className="mx-auto mt-6">
-              <Pressable className="bg-[#537FE7] w-80 h-10 rounded-xl justify-center">
+              <Pressable className="bg-[#98B2F1] w-80 h-10 rounded-xl justify-center">
                 <Text className="text-center text-white font-semibold text-base">
                   Save
                 </Text>

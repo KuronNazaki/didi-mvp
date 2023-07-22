@@ -1,12 +1,12 @@
 import React from 'react';
 import { Image, View } from 'react-native';
 
-const StyledImage = ({ relativeSrc }) => {
+const StyledImage = ({ relativeSrc, size = 60 }) => {
   return (
     <View
       style={{
-        width: 60,
-        height: 60,
+        width: size,
+        height: size,
         borderRadius: 100,
         backgroundColor: '#F5F5F5',
         shadowOffset: {
@@ -23,8 +23,12 @@ const StyledImage = ({ relativeSrc }) => {
       >
         {relativeSrc ? (
           <Image
-            source={relativeSrc}
-            style={{ width: '100%', height: '100%', resizeMode: 'contain' }}
+            source={
+              typeof relativeSrc === 'string'
+                ? { uri: relativeSrc }
+                : relativeSrc
+            }
+            style={{ width: '100%', height: '100%', resizeMode: 'cover' }}
           />
         ) : (
           <></>
