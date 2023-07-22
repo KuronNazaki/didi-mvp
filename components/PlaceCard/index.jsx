@@ -10,24 +10,16 @@ const DEFAULT_IMAGE = Image.resolveAssetSource(require(uri)).uri;
 const PlaceCard = ({ place = {}, onPress }) => {
   const {
     name = 'N/A',
-    location = 'N/A',
+    placeLocation = 'N/A',
     openingTime = null,
-    description = 'N/A',
+    placeDescription = 'N/A',
     rating = 'N/A',
     imageUrl = DEFAULT_IMAGE,
   } = place;
 
   return (
     <TouchableOpacity
-      className={`w-full rounded-lg bg-ink-white p-[15]`}
-      style={{
-        shadowOffset: {
-          x: 0,
-          y: 0,
-        },
-        shadowOpacity: 0.15,
-        shadowRadius: 15,
-      }}
+      className={`w-full rounded-lg bg-slate-100 p-[15]`}
       activeOpacity={0.8}
       onPress={onPress}
     >
@@ -48,7 +40,7 @@ const PlaceCard = ({ place = {}, onPress }) => {
               >
                 {name}
               </Text>
-              <View
+              {/* <View
                 className={`flex-row justify-end`}
                 style={{ flexShrink: 0 }}
               >
@@ -63,38 +55,42 @@ const PlaceCard = ({ place = {}, onPress }) => {
                 >
                   {rating}
                 </Text>
-              </View>
+              </View> */}
             </View>
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.regular10 }}
               className={`text-ink-secondary mt-1`}
             >
-              {location}
+              {placeLocation}
             </Text>
           </View>
           <View
             className={`w-full h-[1.5] my-3 bg-ink-senary self-center`}
           ></View>
-          <View className={`flex-row`} style={{ columnGap: 4 }}>
-            <Text
-              style={{ ...GLOBAL_TEXT_STYLES.semibold10 }}
-              className={`text-ink-secondary`}
-            >
-              Mở cửa
-            </Text>
-            <Text
-              style={{ ...GLOBAL_TEXT_STYLES.regular10 }}
-              className={`text-ink-secondary`}
-            >
-              {openingTime.close && openingTime.open
-                ? `${new Date(
-                    openingTime.open
-                  ).toLocaleTimeString()} - ${new Date(
-                    openingTime.close
-                  ).toLocaleTimeString()}`
-                : 'N/A'}
-            </Text>
-          </View>
+          {openingTime && openingTime.start && openingTime.end ? (
+            <View className={`flex-row`} style={{ columnGap: 4 }}>
+              <Text
+                style={{ ...GLOBAL_TEXT_STYLES.semibold10 }}
+                className={`text-ink-secondary`}
+              >
+                Mở cửa
+              </Text>
+              <Text
+                style={{ ...GLOBAL_TEXT_STYLES.regular10 }}
+                className={`text-ink-secondary`}
+              >
+                {openingTime.end && openingTime.start
+                  ? `${new Date(openingTime.start).toLocaleTimeString(
+                      'vi-VN'
+                    )} - ${new Date(openingTime.end).toLocaleTimeString(
+                      'vi-VN'
+                    )}`
+                  : 'N/A'}
+              </Text>
+            </View>
+          ) : (
+            <></>
+          )}
           <Text
             className={'text-ink-secondary'}
             style={{
@@ -102,7 +98,7 @@ const PlaceCard = ({ place = {}, onPress }) => {
               ...GLOBAL_TEXT_STYLES.regularitalic10,
             }}
           >
-            {description}
+            {placeDescription}
           </Text>
         </View>
       </View>

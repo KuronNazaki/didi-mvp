@@ -4,28 +4,42 @@ import { ScrollView, Text, View } from 'react-native';
 import { TextInputWithLabel } from '../../components/Input';
 import { BaseButton } from '../../components/Button';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useAuthContext } from '../../misc/AuthContext';
 
 const EditProfileScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
 
-  const [imageUrlState, setImageUrlState] = useState('');
-  const [nameState, setNameState] = useState('');
-  const [bioState, setBioState] = useState('');
-  const [emailState, setEmailState] = useState('');
-  const [user, setUser] = useState({});
+  const { state, update } = useAuthContext();
+  const { avatar, name, bio, email } = state.user;
 
-  useEffect(() => {
-    const getUser = async () => {
-      const stringData = await AsyncStorage.getItem('@userToken');
-      const parsedData = JSON.parse(stringData);
-      setUser(parsedData);
-      setEmailState(parsedData.email)
-      setNameState(parsedData.name);
-      setBioState(parsedData.bio);
-      setImageUrlState(parsedData.imageUrl);
-    };
-    getUser();
-  }, []);
+  const [imageUrlState, setImageUrlState] = useState(avatar);
+  const [nameState, setNameState] = useState(name);
+  const [bioState, setBioState] = useState(bio);
+  const [emailState] = useState(email);
+
+  const onUpdate = async () => {
+    // console.log(nameState, imageUrlState, bioState, state.user);
+    await update({
+      ...state.user,
+      avatar: imageUrlState,
+      name: nameState,
+      bio: bioState,
+    });
+    navigation.goBack();
+  };
+
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const stringData = await AsyncStorage.getItem('@userToken');
+  //     const parsedData = JSON.parse(stringData);
+  //     setUser(parsedData);
+  //     setEmailState(parsedData.email)
+  //     setNameState(parsedData.name);
+  //     setBioState(parsedData.bio);
+  //     setImageUrlState(parsedData.imageUrl);
+  //   };
+  //   getUser();
+  // }, []);
 
   return (
     <View className={`w-full h-full bg-ink-white`}>
@@ -64,12 +78,7 @@ const EditProfileScreen = ({ navigation }) => {
               multiline
             />
             <View className="w-full mt-6">
-              <BaseButton
-                title={'Lưu'}
-                onPress={() => {
-                  navigation.goBack();
-                }}
-              />
+              <BaseButton title={'Lưu'} onPress={onUpdate} />
             </View>
           </View>
         </View>

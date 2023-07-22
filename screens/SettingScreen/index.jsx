@@ -21,27 +21,15 @@ import EditProfileScreen from '../EditProfileScreen';
 import PremiumScreen from '../PremiumScreen';
 import PaymentScreen from '../PaymentScreen';
 import StyledImage from '../../components/StyledImage';
-import { DEFAULT_IMAGE } from '../../constants/images';
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_IMAGE } from '../../constants/images';
 import { LinearGradient } from 'expo-linear-gradient';
 import RouteSvg from '../../assets/route-square.svg';
 
 const SettingScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
   const { signOut } = useAuthContext();
-  const [user, setUser] = useState({});
-
-  useEffect(() => {
-    const getUser = async () => {
-      try {
-        const data = await AsyncStorage.getItem('@userToken');
-        const parsedData = JSON.parse(data);
-        setUser(parsedData);
-      } catch (e) {
-        console.log(e);
-      }
-    };
-    getUser();
-  }, []);
+  const { state } = useAuthContext();
+  const { user } = state;
 
   return (
     <>
@@ -55,7 +43,7 @@ const SettingScreen = ({ navigation }) => {
             style={{ columnGap: 10 }}
           >
             <StyledImage
-              relativeSrc={user.imageUrl ? user.imageUrl : DEFAULT_IMAGE}
+              relativeSrc={user.avatar ? user.avatar : DEFAULT_AVATAR_IMAGE}
             />
             <View style={{ rowGap: 2 }}>
               <Text
@@ -91,7 +79,7 @@ const SettingScreen = ({ navigation }) => {
                   <BuildingSvg
                     width={80}
                     height={80}
-                    color={GLOBAL_COLORS.INK.white}
+                    color={GLOBAL_COLORS.INK.white + '99'}
                   />
                 }
               />
@@ -104,7 +92,7 @@ const SettingScreen = ({ navigation }) => {
                   <EditSvg
                     width={80}
                     height={80}
-                    color={GLOBAL_COLORS.INK.white}
+                    color={GLOBAL_COLORS.INK.white + '99'}
                   />
                 }
               />
@@ -125,7 +113,7 @@ const SettingScreen = ({ navigation }) => {
             <ProfileSvg
               width={30}
               height={30}
-              color={GLOBAL_COLORS.INK.primary}
+              color={GLOBAL_COLORS.INK.primary + '99'}
             />
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
@@ -145,7 +133,7 @@ const SettingScreen = ({ navigation }) => {
             <CrownSvg
               width={30}
               height={30}
-              color={GLOBAL_COLORS.INK.primary}
+              color={GLOBAL_COLORS.INK.primary + '99'}
             />
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
@@ -169,7 +157,7 @@ const SettingScreen = ({ navigation }) => {
             <GlobalSvg
               width={30}
               height={30}
-              color={GLOBAL_COLORS.INK.primary}
+              color={GLOBAL_COLORS.INK.primary + '99'}
             />
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
@@ -184,11 +172,7 @@ const SettingScreen = ({ navigation }) => {
             activeOpacity={0.8}
             onPress={() => {}}
           >
-            <EditSvg
-              width={30}
-              height={30}
-              color={GLOBAL_COLORS.INK.primary}
-            />
+            <EditSvg width={30} height={30} color={GLOBAL_COLORS.INK.primary + '99'} />
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
               className={`text-ink-primary`}
@@ -205,7 +189,7 @@ const SettingScreen = ({ navigation }) => {
             <RouteSvg
               width={30}
               height={30}
-              color={GLOBAL_COLORS.INK.primary}
+              color={GLOBAL_COLORS.INK.primary + '99'}
             />
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
@@ -223,7 +207,7 @@ const SettingScreen = ({ navigation }) => {
             <LogoutSvg
               width={30}
               height={30}
-              color={GLOBAL_COLORS.INK.primary}
+              color={GLOBAL_COLORS.INK.primary + '99'}
             />
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}

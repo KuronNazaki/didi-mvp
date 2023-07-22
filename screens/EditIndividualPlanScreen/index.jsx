@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PickerWithLabel from '../../components/Picker';
 import { DateInputWithLabel, TextInputWithLabel } from '../../components/Input';
 import {
@@ -10,15 +10,61 @@ import {
 import { Image } from 'react-native';
 import { BaseButton } from '../../components/Button';
 import { PROVINCES } from '../../constants/province';
+import { BASE_URL } from '../../constants/api';
 
 const uri = './../../assets/avatar.png';
 const DEFAULT_IMAGE = Image.resolveAssetSource(require(uri)).uri;
 
-const EditIndividualPlanScreen = () => {
+const EditIndividualPlanScreen = ({ route, navigation }) => {
+  const { planId } = route.params;
+
+  const [plan, setPlan] = useState(null);
   const [titleState, setTitleState] = useState('');
   const [locationState, setLocationState] = useState('');
   const [descriptionState, setDescriptionState] = useState('');
-	const [imageUrl, setImageUrl] = useState('');
+  const [startDateState, setStartDateState] = useState(new Date());
+  const [endDateState, setEndDateState] = useState(new Date());
+  const [imageUrl, setImageUrl] = useState('');
+
+  const onUpdate = async () => {
+    try {
+      const promise = await fetch(`${BASE_URL}/plan/${planId}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          ...plan,
+          title: titleState,
+          location: locationState,
+          planDescription: descriptionState,
+          imageUrl,
+        }),
+      });
+      const data = await promise.json();
+      if (data) {
+        navigation.goBack();
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  useEffect(() => {
+    const getPlan = async () => {
+      const promise = await fetch(`${BASE_URL}/plan/${planId}`);
+      const planData = await promise.json();
+      setPlan(planData);
+      setTitleState(planData.title);
+      setLocationState(planData.location);
+      setDescriptionState(planData.planDescription);
+      setImageUrl(planData.imageUrl);
+      setStartDateState(new Date(planData.startDate));
+      setEndDateState(new Date(planData.endDate));
+    };
+    getPlan();
+  }, [planId]);
 
   return (
     <ScrollView className={'h-full w-full'}>
@@ -98,26 +144,36 @@ const EditIndividualPlanScreen = () => {
                 <TextInputWithLabel
                   label={'Đường dẫn ảnh'}
                   placeholder={'Đường dẫn ảnh'}
-									value={imageUrl}
-									onValueChange={setImageUrl}
-									multiline
+                  value={imageUrl}
+                  onValueChange={setImageUrl}
+                  multiline
                 />
                 <TextInputWithLabel
                   label={'Tiêu đề'}
                   placeholder={'Nhập tiêu đề vào nè'}
-									value={titleState}
-									onValueChange={setTitleState}
-									multiline
+                  value={titleState}
+                  onValueChange={setTitleState}
+                  multiline
                 />
                 <View
                   className={`flex-row justify-between`}
                   style={{ columnGap: 20 }}
                 >
                   <View className={`flex-1`}>
-                    <DateInputWithLabel label={'Ngày bắt đầu'}  />
+                    <DateInputWithLabel
+                      label={'Ngày bắt đầu'}
+                      value={startDateState}
+                      onValueChange={setStartDateState}
+                      disabled
+                    />
                   </View>
                   <View className={`flex-1`}>
-                    <DateInputWithLabel label={'Ngày kết thúc'} />
+                    <DateInputWithLabel
+                      label={'Ngày kết thúc'}
+                      value={endDateState}
+                      onValueChange={setEndDateState}
+                      disabled
+                    />
                   </View>
                 </View>
                 <PickerWithLabel
@@ -126,20 +182,20 @@ const EditIndividualPlanScreen = () => {
                     label: PROVINCES[code].name,
                     value: PROVINCES[code].name,
                   }))}
-									value={locationState}
-									onValueChange={setLocationState}
+                  value={locationState}
+                  onValueChange={setLocationState}
                   placeholder={{ label: 'Chọn thành phố', value: null }}
                 />
                 <TextInputWithLabel
                   label={'Mô tả'}
                   placeholder={'Mô tả nhập ở đây nè'}
-									value={descriptionState}
-									onValueChange={setDescriptionState}
+                  value={descriptionState}
+                  onValueChange={setDescriptionState}
                   multiline={true}
                 />
               </View>
               <View className="w-full mt-6">
-                <BaseButton title={'Lưu'} />
+                <BaseButton title={'Lưu'} onPress={onUpdate} />
               </View>
             </View>
           </View>

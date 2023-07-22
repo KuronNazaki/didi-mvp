@@ -1,8 +1,9 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import {
   Keyboard,
   SafeAreaView,
   Text,
+  ToastAndroid,
   TouchableOpacity,
   TouchableWithoutFeedback,
   View,
@@ -13,12 +14,37 @@ import { BaseButton } from '../../components/Button';
 import LineSeparator from '../../components/Separator';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AuthContext, { useAuthContext } from '../../misc/AuthContext';
+import { BASE_URL } from '../../constants/api';
 
 const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
   const { signIn } = useAuthContext();
+
+  const onSignIn = async () => {
+    if (!(email && password)) {
+      ToastAndroid.show(
+        'Hãy điền tất cả những thông tin cần thiết',
+        ToastAndroid.SHORT
+      );
+    } else {
+      if (
+        !String(email)
+          .toLowerCase()
+          .match(
+            /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+          )
+      ) {
+        ToastAndroid.show('Email không hợp lệ', ToastAndroid.SHORT);
+      } else {
+        await signIn({
+          email: email,
+          password: password,
+        });
+      }
+    }
+  };
 
   return (
     <SafeAreaView className={`w-full h-full bg-ink-white`}>
@@ -33,7 +59,7 @@ const LoginScreen = ({ navigation }) => {
             </Text>
             <Text
               style={{ ...GLOBAL_TEXT_STYLES.regular13 }}
-              className={`text-ink-secondary mt-2`}
+              className={`text-ink-secondary mt-2 text-center`}
             >
               Tiếp tục lên lịch cho chuyến đi tiếp theo nào
             </Text>
@@ -53,21 +79,7 @@ const LoginScreen = ({ navigation }) => {
               value={password}
               onValueChange={setPassword}
             />
-            <BaseButton
-              title={'Đăng nhập'}
-              onPress={() =>
-                signIn({
-                  email: email,
-                  password: password,
-                  name: 'Huỳnh Hoàng Huy',
-                  bio: 'Thích đi đây đi đó, khám phá nhiều nơi mà chưa từng đặt chân tới',
-                  isPremium: true,
-                  token: 'huynhhuy2002',
-                  imageUrl:
-                    'https://images.unsplash.com/photo-1501196354995-cbb51c65aaea?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2942&q=80',
-                })
-              }
-            />
+            <BaseButton title={'Đăng nhập'} onPress={onSignIn} />
             <View className={`w-full flex-row items-center justify-center`}>
               <Text
                 style={{ ...GLOBAL_TEXT_STYLES.regular10 }}

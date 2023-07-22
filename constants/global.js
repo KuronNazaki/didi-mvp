@@ -74,7 +74,7 @@ const GLOBAL_COLORS = {
   'darker-slate': '#EFF3F4',
 };
 
-const fontOffset = 8;
+const fontOffset = 5;
 
 const GLOBAL_TEXT_STYLES = {
   regular28: {

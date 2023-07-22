@@ -8,22 +8,10 @@ import HeartSvg from '../../assets/heart-circle.svg';
 import MessageSvg from '../../assets/message-text-1.svg';
 
 const CommunityPost = ({ navigation, post }) => {
-  const styles = StyleSheet.create({
-    container: {
-      shadowColor: '#000000',
-      shadowOffset: {
-        width: 0,
-        height: 3,
-      },
-      shadowRadius: 10,
-      shadowOpacity: 0.08,
-    },
-  });
-
   return (
     <View
-      className={`p-[10] bg-ink-white rounded-xl`}
-      style={{ ...styles.container, rowGap: 10 }}
+      className={`p-[10] bg-slate-100 rounded-xl`}
+      style={{ rowGap: 10 }}
     >
       <View className={`flex-row items-center`} style={{ columnGap: 5 }}>
         <StyledImage
@@ -50,7 +38,7 @@ const CommunityPost = ({ navigation, post }) => {
         </View>
       </View>
       <View>
-        <Text style={{ ...GLOBAL_TEXT_STYLES.regular13 }}>{post.caption}</Text>
+        <Text style={{ ...GLOBAL_TEXT_STYLES.regular10 }}>{post.caption}</Text>
       </View>
       <PlannerCard
         key={1}
@@ -62,11 +50,11 @@ const CommunityPost = ({ navigation, post }) => {
         endDate={new Date(post.plan.endDate)}
         description={post.plan.planDescription}
         fullWidth
-        onPress={() => {
-          navigation.navigate('IndividualPlan', {
-            plan: JSON.stringify(post.plan),
-          });
-        }}
+        // onPress={() => {
+        //   navigation.navigate('IndividualPlan', {
+        //     plan: JSON.stringify(post.plan),
+        //   });
+        // }}
       />
       <View className={`flex-row`} style={{ columnGap: 10 }}>
         <TouchableOpacity
@@ -101,7 +89,7 @@ const CommunityPost = ({ navigation, post }) => {
       <View style={{rowGap: 5}}>
         {post?.comment?.comments && post?.comment?.comments?.length > 0 ? (
           post.comment.comments.map((item, index) => (
-            <View className={`flex-row w-full`} style={{ columnGap: 5 }} key={index}>
+            <View className={`flex-row w-full overflow-hidden`} style={{ columnGap: 5 }} key={index}>
               <Text
                 style={{ ...GLOBAL_TEXT_STYLES.semibold10 }}
                 className={`text-ink-primary`}

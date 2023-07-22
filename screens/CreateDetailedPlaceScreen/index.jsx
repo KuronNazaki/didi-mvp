@@ -1,20 +1,58 @@
-import React, { useState } from 'react'
+import React, { useState } from 'react';
 import { Image, Keyboard } from 'react-native';
 import { ScrollView, TouchableWithoutFeedback, View } from 'react-native';
 import { TextInputWithLabel } from '../../components/Input';
 import { BaseButton } from '../../components/Button';
+import { BASE_URL } from '../../constants/api';
 
 const uri = './../../assets/avatar.png';
 const DEFAULT_IMAGE = Image.resolveAssetSource(require(uri)).uri;
 
-const CreateDetailedPlaceScreen = () => {
-	const [nameState, setNameState] = useState('');
+const CreateDetailedPlaceScreen = ({ route, navigation }) => {
+  const { currentDay, planId } = route.params;
+
+  const [nameState, setNameState] = useState('');
   const [placeLocationState, setPlaceLocationState] = useState('');
   const [phoneNumberState, setPhoneNumberState] = useState('');
   const [descriptionState, setDescriptionState] = useState('');
 
-	return (
-		<ScrollView className={'h-full w-full'}>
+  const createAttraction = async () => {
+    try {
+      const promise = await fetch(`${BASE_URL}/plan/${planId}/addAttraction`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          dayIndex: currentDay,
+          data: {
+            name: nameState,
+            placeDescription: descriptionState,
+            placeLocation: placeLocationState,
+            phoneNumber: phoneNumberState,
+            rating: null,
+            openingTime: {
+              start: null,
+              end: null,
+            },
+            planningTime: {
+              start: null,
+              end: null,
+            },
+            notes: [],
+          },
+        }),
+      });
+      const newPlan = await promise.json();
+    } catch (err) {
+      console.log(err);
+    }
+    navigation.goBack();
+  };
+
+  return (
+    <ScrollView className={'h-full w-full'}>
       <TouchableWithoutFeedback
         className={`w-full h-full`}
         onPress={Keyboard.dismiss}
@@ -71,7 +109,7 @@ const CreateDetailedPlaceScreen = () => {
                   placeholder={'Tên'}
                   value={nameState}
                   onValueChange={setNameState}
-									multiline
+                  multiline
                 />
                 <TextInputWithLabel
                   label={'Mô tả'}
@@ -92,23 +130,23 @@ const CreateDetailedPlaceScreen = () => {
                   placeholder="Số điện thoại"
                   value={phoneNumberState}
                   onValueChange={setPhoneNumberState}
-									multiline
+                  multiline
                 />
-                <TextInputWithLabel
+                {/* <TextInputWithLabel
                   label={'Ghi chú'}
                   multiline
                   placeholder="Ghi chú ở đây"
-                />
+                /> */}
               </View>
               <View className="w-full mt-6">
-                <BaseButton title={'Lưu'} />
+                <BaseButton title={'Tạo mới'} onPress={createAttraction} />
               </View>
             </View>
           </View>
         </View>
       </TouchableWithoutFeedback>
     </ScrollView>
-	)
-}
+  );
+};
 
-export default CreateDetailedPlaceScreen
+export default CreateDetailedPlaceScreen;

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
+  ActivityIndicator,
   Image,
   ScrollView,
   StatusBar,
@@ -11,6 +12,7 @@ import {
 import ArrowLeftSvg from './../../assets/arrow-left-1.svg';
 import EditSvg from './../../assets/edit-2.svg';
 import LocationSvg from './../../assets/location.svg';
+import TrashSvg from './../../assets/trash.svg';
 import FullEditSvg from './../../assets/edit.svg';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -21,6 +23,9 @@ import PlaceCard from '../../components/PlaceCard';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { LinearGradient } from 'expo-linear-gradient';
 import { EXAMPLES } from '../../constants/db';
+import { BASE_URL } from '../../constants/api';
+import { useIsFocused } from '@react-navigation/native';
+import { useAuthContext } from '../../misc/AuthContext';
 
 const defaultUri = '../../assets/avatar.png';
 const DEFAULT_IMAGE = Image.resolveAssetSource(require(defaultUri)).uri;
@@ -79,146 +84,173 @@ const DateButton = ({
   );
 };
 
-const PlacePanel = ({ navigation, placeArray, currentDay }) => {
+const PlacePanel = ({ navigation, placeArray, currentDay, planId }) => {
   return placeArray[currentDay]?.map((item, index) => (
     <PlaceCard
       key={index}
       place={item}
       onPress={() =>
-        navigation.navigate('DetailedPlace', { place: JSON.stringify(item) })
+        navigation.navigate('DetailedPlace', {
+          place: JSON.stringify(item),
+          planId: planId,
+          dayIndex: currentDay,
+        })
       }
     />
   ));
 };
 
 const IndividualPlanScreen = ({ navigation, route }) => {
-  const { plan } = route.params;
-  const deserializedPlan = JSON.parse(plan);
-  const tabBarHeight = useBottomTabBarHeight();
+  const { planId } = route.params;
+  const [plan, setPlan] = useState(null);
 
-  const [currentPlan, setCurrentPlan] = useState({});
+  const { state, reload } = useAuthContext();
+  const { userToken } = state;
+
   const [currentDay, setCurrentDay] = useState(0);
-  const schedule = EXAMPLES[0].schedule;
-
-  useEffect(() => {
-    // navigation.getParent()?.setOptions({
-    //   tabBarStyle: {
-    //     display: 'none',
-    //   },
-    // });
-    // return () =>
-    //   navigation.getParent()?.setOptions({
-    //     tabBarStyle: {
-    //       display: 'flex',
-    //     },
-    //   });
-  }, [navigation]);
+  const isFocused = useIsFocused();
 
   const diff =
-    (new Date(deserializedPlan.endDate) -
-      new Date(deserializedPlan.startDate)) /
+    (new Date(plan?.endDate) - new Date(plan?.startDate)) /
     (1000 * 60 * 60 * 24);
-  // console.log(diff + 1);
+
+  useEffect(() => {
+    const getPlan = async () => {
+      const promise = await fetch(`${BASE_URL}/plan/${planId}`);
+      const data = await promise.json();
+      setPlan(data);
+    };
+    if (isFocused) {
+      getPlan();
+    }
+  }, [isFocused]);
+
+  const onDelete = async () => {
+    try {
+      const promise = await fetch(`${BASE_URL}/plan/${planId}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          userId: userToken,
+        }),
+      });
+      await reload();
+      navigation.goBack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <View className={`w-full h-full bg-white`}>
       <StatusBar hidden={true} />
-      <ScrollView className={'w-full h-full'}>
-        <View style={{ paddingBottom: tabBarHeight + 20 }}>
-          <View
-            className={'w-full h-[300]'}
-            style={{ elevation: 1, zIndex: -10 }}
-          >
-            <Image
-              source={{
-                uri: deserializedPlan.imageUrl
-                  ? deserializedPlan.imageUrl
-                  : DEFAULT_IMAGE,
-              }}
-              style={{ resizeMode: 'cover' }}
-              className={`w-full h-full`}
-            />
-            <View className={`w-full absolute bottom-0 left-0 px-5 py-8`}>
-              <Text
-                style={{ ...GLOBAL_TEXT_STYLES.bold28 }}
-                className={`w-11/12 text-ink-white`}
-              >
-                {deserializedPlan.title}
-              </Text>
-              <Text
-                style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
-                className={`mt-[2%] text-ink-senary`}
-              >
-                {`${new Date(
-                  deserializedPlan.startDate
-                ).toLocaleDateString()} - ${new Date(
-                  deserializedPlan.endDate
-                ).toLocaleDateString()}`}
-              </Text>
-            </View>
-          </View>
-          <SafeAreaView
-            className={`absolute w-full flex-row justify-between`}
-            style={{ paddingHorizontal: 20 }}
-          >
-            <TouchableOpacity onPress={() => navigation.goBack()}>
-              <ArrowLeftSvg width={30} height={30} color={'white'} />
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => navigation.navigate('EditIndividualPlan')}
+      {plan === null ? (
+        <View className={`w-full h-full justify-center items-center`}>
+          <ActivityIndicator />
+        </View>
+      ) : (
+        <ScrollView className={'w-full h-full'}>
+          <View style={{ paddingBottom: 20 }}>
+            <View
+              className={'w-full h-[300]'}
+              style={{ elevation: 1, zIndex: -10 }}
             >
-              <EditSvg width={30} height={30} color={'white'} />
-            </TouchableOpacity>
-          </SafeAreaView>
-          <View className={`w-full p-5`}>
-            <View>
-              <Text
-                style={{ ...GLOBAL_TEXT_STYLES.bold22 }}
-                className={`text-ink-primary`}
-              >
-                Tổng quan
-              </Text>
-              <View style={{ rowGap: '10%' }} className={`w-full mt-[5%]`}>
-                <View
-                  className={`w-full flex-row items-center`}
-                  style={{ columnGap: '10%' }}
+              <Image
+                source={{
+                  uri: plan.imageUrl ? plan.imageUrl : DEFAULT_IMAGE,
+                }}
+                style={{ resizeMode: 'cover' }}
+                className={`w-full h-full`}
+              />
+              <View className={`w-full absolute bottom-0 left-0 px-5 py-8`}>
+                <Text
+                  style={{ ...GLOBAL_TEXT_STYLES.bold28 }}
+                  className={`w-11/12 text-ink-white`}
                 >
-                  <LocationSvg
-                    width={25}
-                    height={25}
-                    color={GLOBAL_COLORS.INK.secondary}
-                  />
-                  <Text
-                    style={{ ...GLOBAL_TEXT_STYLES.regular13 }}
-                    className={`text-ink-secondary`}
-                  >
-                    {deserializedPlan.location}
-                  </Text>
-                </View>
-                <View
-                  className={`w-full flex-row items-start`}
-                  style={{ columnGap: '10%' }}
+                  {plan.title}
+                </Text>
+                <Text
+                  style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
+                  className={`mt-[2%] text-ink-senary`}
                 >
-                  <FullEditSvg
-                    width={25}
-                    height={25}
-                    color={GLOBAL_COLORS['light-grey']}
-                  />
-                  <Text
-                    style={{
-                      ...GLOBAL_TEXT_STYLES.regular13,
-                    }}
-                    className={`w-11/12 text-ink-secondary`}
-                  >
-                    {deserializedPlan.planDescription}
-                  </Text>
-                </View>
+                  {`${new Date(plan.startDate).toLocaleDateString(
+                    'vi-VN'
+                  )} - ${new Date(plan.endDate).toLocaleDateString('vi-VN')}`}
+                </Text>
               </View>
-              <View
-                className={`w-11/12 h-[1.5] mt-[5%] bg-ink-senary self-center`}
-              ></View>
             </View>
-            {/* <View className={`w-full mt-8`}>
+            <SafeAreaView
+              className={`absolute w-full flex-row justify-between`}
+              style={{ padding: 20 }}
+            >
+              <TouchableOpacity onPress={() => navigation.goBack()}>
+                <ArrowLeftSvg width={30} height={30} color={'white'} />
+              </TouchableOpacity>
+              <View className={`flex-row`} style={{ columnGap: 10 }}>
+                <TouchableOpacity onPress={onDelete}>
+                  <TrashSvg width={28} height={28} color={'white'} />
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    navigation.navigate('EditIndividualPlan', { planId })
+                  }
+                >
+                  <EditSvg width={30} height={30} color={'white'} />
+                </TouchableOpacity>
+              </View>
+            </SafeAreaView>
+            <View className={`w-full p-5`}>
+              <View>
+                <Text
+                  style={{ ...GLOBAL_TEXT_STYLES.bold22 }}
+                  className={`text-ink-primary`}
+                >
+                  Tổng quan
+                </Text>
+                <View style={{ rowGap: 10 }} className={`w-full mt-[5%]`}>
+                  <View
+                    className={`w-full flex-row items-center`}
+                    style={{ columnGap: 10 }}
+                  >
+                    <LocationSvg
+                      width={25}
+                      height={25}
+                      color={GLOBAL_COLORS.INK.secondary + '90'}
+                    />
+                    <Text
+                      style={{ ...GLOBAL_TEXT_STYLES.regular13 }}
+                      className={`text-ink-secondary`}
+                    >
+                      {plan.location}
+                    </Text>
+                  </View>
+                  <View
+                    className={`w-full flex-row items-start`}
+                    style={{ columnGap: 10 }}
+                  >
+                    <FullEditSvg
+                      width={25}
+                      height={25}
+                      color={GLOBAL_COLORS['light-grey'] + '90'}
+                    />
+                    <Text
+                      style={{
+                        ...GLOBAL_TEXT_STYLES.regular13,
+                      }}
+                      className={`w-11/12 text-ink-secondary`}
+                    >
+                      {plan.planDescription}
+                    </Text>
+                  </View>
+                </View>
+                <View
+                  className={`w-11/12 h-[1.5] mt-[5%] bg-ink-senary self-center`}
+                ></View>
+              </View>
+              {/* <View className={`w-full mt-8`}>
               <Text
                 style={{ ...GLOBAL_TEXT_STYLES.bold22 }}
                 className={`text-ink-primary`}
@@ -234,52 +266,59 @@ const IndividualPlanScreen = ({ navigation, route }) => {
                 className={`w-11/12 h-[1.5] mt-[5%] bg-ink-senary self-center`}
               ></View>
             </View> */}
-            <View className={`w-full mt-8`}>
-              <Text
-                style={{ ...GLOBAL_TEXT_STYLES.bold22 }}
-                className={`text-ink-primary`}
-              >
-                Lịch trình
-              </Text>
-              <ScrollView
-                horizontal={true}
-                showsHorizontalScrollIndicator={false}
-                className={`overflow-visible mt-5`}
-              >
-                <View className={`flex-row`} style={{ columnGap: 10 }}>
-                  {Array.apply(null, Array(diff + 1)).map((item, index) => (
-                    <DateButton
-                      keyProp={index}
-                      key={index}
-                      title={'Ngày ' + (index + 1)}
-                      date={(() => {
-                        const date = new Date(deserializedPlan.startDate);
-                        date.setDate(date.getDate() + index);
-                        return date.toLocaleDateString();
-                      })()}
-                      current={currentDay}
-                      onPress={() => setCurrentDay(index)}
-                    />
-                  ))}
+              <View className={`w-full mt-8`}>
+                <Text
+                  style={{ ...GLOBAL_TEXT_STYLES.bold22 }}
+                  className={`text-ink-primary`}
+                >
+                  Lịch trình
+                </Text>
+                <ScrollView
+                  horizontal={true}
+                  showsHorizontalScrollIndicator={false}
+                  className={`overflow-visible mt-5`}
+                >
+                  <View className={`flex-row`} style={{ columnGap: 10 }}>
+                    {Array.apply(null, Array(diff + 1)).map((item, index) => (
+                      <DateButton
+                        keyProp={index}
+                        key={index}
+                        title={'Ngày ' + (index + 1)}
+                        date={(() => {
+                          const date = new Date(plan.startDate);
+                          date.setDate(date.getDate() + index);
+                          return date.toLocaleDateString('vi-VN');
+                        })()}
+                        current={currentDay}
+                        onPress={() => setCurrentDay(index)}
+                      />
+                    ))}
+                  </View>
+                </ScrollView>
+                <View className={`mt-5`}>
+                  <DashButton
+                    title={'Thêm địa điểm, khách sạn,...'}
+                    onPress={() =>
+                      navigation.navigate('CreateDetailedPlace', {
+                        currentDay,
+                        planId: plan._id,
+                      })
+                    }
+                  />
                 </View>
-              </ScrollView>
-              <View className={`mt-5`}>
-                <DashButton
-                  title={'Thêm địa điểm, khách sạn,...'}
-                  onPress={() => navigation.navigate('CreateDetailedPlace')}
-                />
-              </View>
-              <View style={{ rowGap: 20 }} className={`mt-5`}>
-                <PlacePanel
-                  navigation={navigation}
-                  placeArray={deserializedPlan.schedule}
-                  currentDay={currentDay}
-                />
+                <View style={{ rowGap: 20 }} className={`mt-5`}>
+                  <PlacePanel
+                    navigation={navigation}
+                    placeArray={plan.schedule}
+                    currentDay={currentDay}
+                    planId={planId}
+                  />
+                </View>
               </View>
             </View>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      )}
     </View>
   );
 };

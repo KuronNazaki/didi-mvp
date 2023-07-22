@@ -6,19 +6,27 @@ import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
 
 const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
 
-const PickerWithLabel = ({ label, items, placeholder, value , onValueChange}) => {
+const PickerWithLabel = ({
+  label,
+  items,
+  placeholder,
+  value,
+  onValueChange,
+}) => {
   return (
     <View style={{ flex: 1 }}>
       <Text className={`text-ink-primary`} style={{ ...TextStyle.semibold15 }}>
         {label}
       </Text>
-      <RNPickerSelect
-        value={value}
-        style={pickerSelectStyles}
-        onValueChange={onValueChange}
-        items={items}
-        placeholder={placeholder}
-      />
+      <View className={`mt-[12] overflow-hidden rounded-lg`}>
+        <RNPickerSelect
+          value={value}
+          style={pickerSelectStyles}
+          onValueChange={onValueChange}
+          items={items}
+          placeholder={placeholder}
+        />
+      </View>
     </View>
   );
 };
@@ -39,8 +47,8 @@ const pickerSelectStyles = StyleSheet.create({
     paddingHorizontal: 10,
     paddingVertical: 8,
     borderWidth: 0.5,
-    borderColor: 'purple',
     borderRadius: 8,
+    backgroundColor: GLOBAL_COLORS.INK.senary,
     color: GLOBAL_COLORS.INK.primary,
     paddingRight: 30, // to ensure the text is never behind the icon
   },

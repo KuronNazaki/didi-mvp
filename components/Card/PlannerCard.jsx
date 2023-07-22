@@ -22,25 +22,24 @@ const PlannerCard = ({
   onPress,
   isIncludedInPost = false,
 }) => {
-  const styles = StyleSheet.create({
-    container: {
-      shadowColor: '#000000',
-      shadowOffset: {
-        width: 0,
-        height: 3,
-      },
-      shadowRadius: 10,
-      shadowOpacity: 0.1,
-    },
-  });
+  // const styles = StyleSheet.create({
+  //   container: {
+  //     shadowColor: '#000000',
+  //     shadowOffset: {
+  //       width: 0,
+  //       height: 3,
+  //     },
+  //     shadowRadius: 10,
+  //     shadowOpacity: 0.1,
+  //   },
+  // });
 
   return (
     <TouchableOpacity
       className={`${fullWidth ? 'w-full' : 'w-[300]'}  rounded-lg ${
-        isIncludedInPost ? '' : 'bg-ink-white'
+        isIncludedInPost ? '' : 'bg-slate-100'
       } overflow-visible`}
       activeOpacity={0.8}
-      style={styles.container}
       onPress={onPress}
     >
       <View className={`p-[15] bg-transparent`}>
@@ -81,7 +80,7 @@ const PlannerCard = ({
           } mt-[5]`}
           style={{ ...GLOBAL_TEXT_STYLES.regular10 }}
         >
-          {`${startDate.toLocaleDateString()} - ${endDate.toLocaleDateString()}`}
+        {`${startDate.toLocaleDateString('vi-VN')} - ${endDate.toLocaleDateString('vi-VN')}`}
         </Text>
         <LineSeparator
           color={
@@ -90,10 +89,10 @@ const PlannerCard = ({
           fullWidth
           strokeWidth={1}
         />
-        <View style={{ rowGap: '10%' }} className={`w-full`}>
+        <View style={{ rowGap: 10 }} className={`w-full`}>
           <View
             className={`w-full flex-row items-center`}
-            style={{ columnGap: '10%' }}
+            style={{ columnGap: 10 }}
           >
             <LocationSvg
               width={22}
@@ -101,7 +100,7 @@ const PlannerCard = ({
               color={
                 isIncludedInPost
                   ? GLOBAL_COLORS.INK.white + '75'
-                  : GLOBAL_COLORS.INK.primary
+                  : GLOBAL_COLORS.INK.primary + '75'
               }
             />
             <Text
@@ -117,7 +116,7 @@ const PlannerCard = ({
           </View>
           <View
             className={`w-full flex-row items-start`}
-            style={{ columnGap: '10%' }}
+            style={{ columnGap: 10 }}
           >
             <FullEditSvg
               width={22}
@@ -125,7 +124,7 @@ const PlannerCard = ({
               color={
                 isIncludedInPost
                   ? GLOBAL_COLORS.INK.white + '75'
-                  : GLOBAL_COLORS.INK.primary
+                  : GLOBAL_COLORS.INK.primary + '75'
               }
             />
             <Text

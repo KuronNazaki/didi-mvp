@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ScrollView,
   ActivityIndicator,
+  FlatList,
 } from 'react-native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import StyledImage from '../../components/StyledImage';
@@ -17,26 +18,18 @@ import { GLOBAL_TEXT_STYLES } from '../../constants/global';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { MAYBE_YOU_LIKE, POPULAR } from '../../constants/db';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DEFAULT_IMAGE } from '../../constants/images';
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_IMAGE } from '../../constants/images';
+import { useAuthContext } from '../../misc/AuthContext';
 
 const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
 
 export default function HomeScreen({ navigation }) {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
-
-  useEffect(() => {
-    const getUser = async () => {
-      const stringData = await AsyncStorage.getItem('@userToken');
-      const parsedData = JSON.parse(stringData);
-      console.log(JSON.parse(stringData));
-      setUser(parsedData);
-    };
-    getUser();
-  }, []);
+  const { state } = useAuthContext();
+  const { user } = state;
 
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [user, setUser] = useState({});
 
   useEffect(() => {
     let timeout;
@@ -57,13 +50,13 @@ export default function HomeScreen({ navigation }) {
         <View
           className={`h-full p-5`}
           style={{
-            paddingTop: headerHeight + 20,
-            paddingBottom: tabBarHeight + 20,
+            paddingTop: 100,
+            paddingBottom: 20,
           }}
         >
           <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
             <StyledImage
-              relativeSrc={user.imageUrl ? user.imageUrl : DEFAULT_IMAGE}
+              relativeSrc={user.avatar ? user.avatar : DEFAULT_AVATAR_IMAGE}
             />
             <View>
               <Text
@@ -95,37 +88,40 @@ export default function HomeScreen({ navigation }) {
                 Xem thêm
               </Text>
             </View>
-            <ScrollView horizontal={true} className={`overflow-visible`}>
-              <View style={{ columnGap: 20 }} className={`flex-row`}>
+            {isDataLoaded ? (
+              <FlatList
+                style={{ overflow: 'visible' }}
+                data={POPULAR}
+                renderItem={({ item }) => (
+                  <Card
+                    title={item.name}
+                    place={item.place}
+                    image={item.imageUrl}
+                    time={item.description}
+                  />
+                )}
+                keyExtractor={(item) => item.name}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
+              />
+            ) : (
+              <ActivityIndicator />
+            )}
+            {/* <ScrollView horizontal={true} className={`overflow-visible`}>
+              <View
+                style={{ columnGap: 20 }}
+                className={`flex-row overflow-visible p-5`}
+              >
                 {isDataLoaded ? (
                   POPULAR.map((item, index) => (
-                    <Card
-                      title={item.name}
-                      place={item.place}
-                      image={item.imageUrl}
-                      time={item.description}
-                      key={index}
-                    />
+                    
                   ))
                 ) : (
                   <ActivityIndicator />
                 )}
-                {/* <Card
-                  title="Hạ Long"
-                  place="Quảng Ninh"
-                  image={require('./../../assets/halong.png')}
-                  time="Hạ Long là thành phố tỉnh lỵ của tỉnh Quảng Ninh, Việt Nam. Thành phố được đặt theo tên của vịnh Hạ Long, vịnh biển nằm ở phía nam thành phố và là một di sản thiên nhiên nổi tiếng của Việt Nam."
-                ></Card>
-                <Card
-                  title="Hội An"
-                  place="Quảng Nam"
-                  image={
-                    'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2017/08/hoi-an-quang-nam-vntrip.jpg'
-                  }
-                  time="Phố cổ Hội An từng là một thương cảng quốc tế sầm uất, gồm những di sản kiến trúc đã có từ hàng trăm năm trước, được UNESCO công nhận là di sản văn hóa thế giới từ năm 1999."
-                ></Card> */}
               </View>
-            </ScrollView>
+            </ScrollView> */}
             <View className={`flex-row justify-between items-end mt-10`}>
               <Text
                 className={`text-ink-primary`}
@@ -140,22 +136,28 @@ export default function HomeScreen({ navigation }) {
                 Xem thêm
               </Text>
             </View>
-            <ScrollView horizontal={true} className={`overflow-visible`}>
+            {isDataLoaded ? (
+              <FlatList
+                style={{ overflow: 'visible' }}
+                data={MAYBE_YOU_LIKE}
+                renderItem={({ item }) => (
+                  <Card
+                    title={item.name}
+                    place={item.place}
+                    image={item.imageUrl}
+                    time={item.description}
+                  />
+                )}
+                keyExtractor={(item) => item.name}
+                horizontal
+                showsHorizontalScrollIndicator={false}
+                ItemSeparatorComponent={() => <View style={{ width: 20 }} />}
+              />
+            ) : (
+              <ActivityIndicator />
+            )}
+            {/* <ScrollView horizontal={true} className={`overflow-visible`}>
               <View style={{ columnGap: 20 }} className={`flex-row`}>
-                {/* <Card
-                  title="Hạ Long"
-                  place="Quảng Ninh"
-                  image={require('./../../assets/halong.png')}
-                  time="Hạ Long là thành phố tỉnh lỵ của tỉnh Quảng Ninh, Việt Nam. Thành phố được đặt theo tên của vịnh Hạ Long, vịnh biển nằm ở phía nam thành phố và là một di sản thiên nhiên nổi tiếng của Việt Nam."
-                ></Card>
-                <Card
-                  title="Hội An"
-                  place="Quảng Nam"
-                  image={
-                    'https://cdn.vntrip.vn/cam-nang/wp-content/uploads/2017/08/hoi-an-quang-nam-vntrip.jpg'
-                  }
-                  time="Phố cổ Hội An từng là một thương cảng quốc tế sầm uất, gồm những di sản kiến trúc đã có từ hàng trăm năm trước, được UNESCO công nhận là di sản văn hóa thế giới từ năm 1999."
-                ></Card> */}
                 {isDataLoaded ? (
                   MAYBE_YOU_LIKE.map((item, index) => (
                     <Card
@@ -170,7 +172,7 @@ export default function HomeScreen({ navigation }) {
                   <ActivityIndicator />
                 )}
               </View>
-            </ScrollView>
+            </ScrollView> */}
           </View>
           {/* {isOpenModal ? (
             <PlaceModal

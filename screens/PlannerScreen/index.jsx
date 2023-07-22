@@ -1,6 +1,7 @@
 import {
   ActivityIndicator,
   Button,
+  FlatList,
   Modal,
   Pressable,
   SafeAreaView,
@@ -28,50 +29,72 @@ import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import DetailedPlaceScreen from '../DetailedPlaceScreen';
 import CreateDetailedPlaceScreen from '../CreateDetailedPlaceScreen';
 import EditIndividualPlanScreen from '../EditIndividualPlanScreen';
-import { DEFAULT_IMAGE } from '../../constants/images';
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_IMAGE } from '../../constants/images';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { LogBox } from 'react-native';
+import { useAuthContext } from '../../misc/AuthContext';
+import { BASE_URL } from '../../constants/api';
+import { useIsFocused } from '@react-navigation/native';
 
 const Stack = createNativeStackNavigator();
 
 const PlannerMainScreen = ({ navigation }) => {
   const headerHeight = useHeaderHeight();
   const tabBarHeight = useBottomTabBarHeight();
+
+  const { state } = useAuthContext();
+  const { user } = state;
+
   const [modalVisible, setModalVisible] = useState(false);
   const [listOfPlans, setListOfPlans] = useState([]);
   const [isDataLoaded, setIsDataLoaded] = useState(false);
-  const [user, setUser] = useState({})
+  const isFocused = useIsFocused();
 
   useEffect(() => {
+    // console.log(state.user);
     const fetchListOfPlans = async () => {
-      const response = await fetch('https://didimvp.wiremockapi.cloud/plans');
-      const data = await response.json();
-      setListOfPlans(data);
-      setIsDataLoaded(true);
+      try {
+        const response = await fetch(
+          `${BASE_URL}/plan/user/${state.user?._id}`
+        );
+        const data = await response.json();
+        // console.log(data);
+        setListOfPlans(data);
+        setIsDataLoaded(true);
+      } catch (e) {
+        console.log(e);
+      }
     };
     fetchListOfPlans();
-  }, []);
+  }, [state.user, state.userToken, isFocused]);
 
   useEffect(() => {
-    const getUser = async () => {
-      const stringData = await AsyncStorage.getItem('@userToken');
-      const parsedData = JSON.parse(stringData);
-      setUser(parsedData);
-    };
-    getUser();
+    LogBox.ignoreLogs(['VirtualizedLists should never be nested']);
   }, []);
+
+  // useEffect(() => {
+  //   const getUser = async () => {
+  //     const stringData = await AsyncStorage.getItem('@userToken');
+  //     const parsedData = JSON.parse(stringData);
+  //     setUser(parsedData);
+  //   };
+  //   getUser();
+  // }, []);
 
   return (
     <View className={`w-full h-full bg-ink-white`}>
-      <ScrollView className={`h-full overflow-visible`}>
+      <ScrollView className={`h-full w-full`}>
         <View
           className={`h-full p-5`}
           style={{
-            paddingTop: headerHeight + 20,
-            paddingBottom: tabBarHeight + 20,
+            paddingTop: 100,
+            paddingBottom: 20,
           }}
         >
           <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
-            <StyledImage relativeSrc={user.imageUrl ? user.imageUrl : DEFAULT_IMAGE} />
+            <StyledImage
+              relativeSrc={user.avatar ? user.avatar : DEFAULT_AVATAR_IMAGE}
+            />
             <View>
               <Text
                 className={`text-ink-secondary`}
@@ -94,118 +117,68 @@ const PlannerMainScreen = ({ navigation }) => {
             >
               Lịch trình của bạn
             </Text>
-            <View className={`mt-[10]`}>
-              {isDataLoaded ? listOfPlans.map((item, index) => (
-                <PlannerCard
-                  key={index}
-                  title={item.title}
-                  location={item.location}
-                  image={item?.imageUrl}
-                  startDate={new Date(item.startDate)}
-                  endDate={new Date(item.endDate)}
-                  description={item.planDescription}
-                  fullWidth
-                  onPress={() => {
-                    navigation.navigate('IndividualPlan', {
-                      plan: JSON.stringify(item),
-                    });
-                  }}
-                />
-              )) : <ActivityIndicator />}
+            <View className={`mt-[10]`} style={{ rowGap: 10 }}>
+              {/*  */}
+              {/* <FlatList
+                  data={listOfPlans}
+                  renderItem={({ item }) => (
+                    <PlannerCard
+                      title={item.title}
+                      location={item.location}
+                      image={item?.imageUrl}
+                      startDate={new Date(item.startDate)}
+                      endDate={new Date(item.endDate)}
+                      description={item.planDescription}
+                      fullWidth
+                      onPress={() => {
+                        navigation.navigate('IndividualPlan', {
+                          plan: JSON.stringify(item),
+                        });
+                      }}
+                    />
+                  )}
+                  keyExtractor={(item) => item.title}
+                /> */}
+              {isDataLoaded ? (
+                listOfPlans.map((item, index) => (
+                  <PlannerCard
+                    key={index}
+                    title={item.title}
+                    location={item.location}
+                    image={item?.imageUrl}
+                    startDate={new Date(item.startDate)}
+                    endDate={new Date(item.endDate)}
+                    description={item.planDescription}
+                    fullWidth
+                    onPress={() => {
+                      navigation.navigate('IndividualPlan', {
+                        planId: item._id,
+                      });
+                    }}
+                  />
+                ))
+              ) : (
+                <ActivityIndicator />
+              )}
             </View>
           </View>
         </View>
       </ScrollView>
-      <View
-        className={`absolute`}
-        style={{ bottom: tabBarHeight + 20, right: 20 }}
-      >
+      <View className={`absolute`} style={{ bottom: 20, right: 20 }}>
         <View>
           <FloatingIconButton
-            icon={<AddItemSvg width={40} height={40} color={'white'} />}
-            onPress={() => setModalVisible(true)}
+            icon={
+              <AddItemSvg
+                width={40}
+                height={40}
+                color={GLOBAL_COLORS.INK.white + '99'}
+              />
+            }
+            onPress={() => {
+              navigation.navigate('CreatePlan');
+            }}
           />
         </View>
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            Alert.alert('Modal has been closed.');
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <BlurView
-            className={`w-full h-full bg-[#00000090]`}
-            tint="light"
-            intensity={10}
-            style={StyleSheet.absoluteFill}
-          >
-            <View
-              style={{
-                right: 20,
-                bottom: tabBarHeight + 20,
-              }}
-              className={`justify-end items-center absolute`}
-            >
-              <View
-                style={{
-                  elevation: 5,
-                  rowGap: 10,
-                }}
-                className={`items-end`}
-              >
-                <Pressable
-                  style={{
-                    padding: 10,
-                    elevation: 2,
-                  }}
-                  onPress={() => setModalVisible(!modalVisible)}
-                >
-                  <Text
-                    className={`text-ink-white`}
-                    style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
-                  >
-                    Ẩn
-                  </Text>
-                </Pressable>
-                {/* <View
-                  className={`flex-row items-center`}
-                  style={{ columnGap: 10 }}
-                >
-                  <Text
-                    className={`text-ink-white`}
-                    style={{ ...GLOBAL_TEXT_STYLES.semibold15 }}
-                  >
-                    Sử dụng mẫu có sẵn
-                  </Text>
-                  <FloatingIconButton
-                    icon={<AddItemSvg width={40} height={40} color={'white'} />}
-                    onPress={() => {}}
-                  />
-                </View> */}
-                <View
-                  className={`flex-row items-center`}
-                  style={{ columnGap: 10 }}
-                >
-                  <Text
-                    className={`text-ink-white`}
-                    style={{ ...GLOBAL_TEXT_STYLES.semibold15 }}
-                  >
-                    Tạo lịch trình trống
-                  </Text>
-                  <FloatingIconButton
-                    icon={<AddItemSvg width={40} height={40} color={'white'} />}
-                    onPress={() => {
-                      setModalVisible(false);
-                      navigation.navigate('CreatePlan');
-                    }}
-                  />
-                </View>
-              </View>
-            </View>
-          </BlurView>
-        </Modal>
       </View>
     </View>
   );
@@ -365,4 +338,87 @@ export default function PlannerStack() {
       </Stack.Group>
     </Stack.Navigator>
   );
+}
+
+{
+  /* <Modal
+          animationType="fade"
+          transparent={true}
+          visible={modalVisible}
+          onRequestClose={() => {
+            Alert.alert('Modal has been closed.');
+            setModalVisible(!modalVisible);
+          }}
+        >
+          <BlurView
+            className={`w-full h-full bg-[#00000090]`}
+            tint="light"
+            intensity={10}
+            style={StyleSheet.absoluteFill}
+          >
+            <View
+              style={{
+                right: 20,
+                bottom: tabBarHeight + 20,
+              }}
+              className={`justify-end items-center absolute`}
+            >
+              <View
+                style={{
+                  elevation: 5,
+                  rowGap: 10,
+                }}
+                className={`items-end`}
+              >
+                <Pressable
+                  style={{
+                    padding: 10,
+                    elevation: 2,
+                  }}
+                  onPress={() => setModalVisible(!modalVisible)}
+                >
+                  <Text
+                    className={`text-ink-white`}
+                    style={{ ...GLOBAL_TEXT_STYLES.semibold13 }}
+                  >
+                    Ẩn
+                  </Text>
+                </Pressable>
+                <View
+                  className={`flex-row items-center`}
+                  style={{ columnGap: 10 }}
+                >
+                  <Text
+                    className={`text-ink-white`}
+                    style={{ ...GLOBAL_TEXT_STYLES.semibold15 }}
+                  >
+                    Sử dụng mẫu có sẵn
+                  </Text>
+                  <FloatingIconButton
+                    icon={<AddItemSvg width={40} height={40} color={'white'} />}
+                    onPress={() => {}}
+                  />
+                </View>
+                <View
+                  className={`flex-row items-center`}
+                  style={{ columnGap: 10 }}
+                >
+                  <Text
+                    className={`text-ink-white`}
+                    style={{ ...GLOBAL_TEXT_STYLES.semibold15 }}
+                  >
+                    Tạo lịch trình trống
+                  </Text>
+                  <FloatingIconButton
+                    icon={<AddItemSvg width={40} height={40} color={'white'} />}
+                    onPress={() => {
+                      setModalVisible(false);
+                      navigation.navigate('CreatePlan');
+                    }}
+                  />
+                </View>
+              </View>
+            </View>
+          </BlurView>
+        </Modal> */
 }

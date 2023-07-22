@@ -26,8 +26,10 @@ import { createContext, useEffect, useMemo, useReducer, useState } from 'react';
 import AuthContext from './misc/AuthContext';
 import NavigationHeightContext from './misc/NavigationHeightContext';
 import { useHeaderHeight } from '@react-navigation/elements';
+import { ToastAndroid } from 'react-native';
+import { BASE_URL } from './constants/api';
 // import { BASE_URL } from '@env';
-console.log(process.env);
+// console.log(process.env);
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -64,6 +66,10 @@ export default function App() {
             userToken: action.token,
             user: action.user,
           };
+        case 'ERROR':
+          return {
+            ...prevState,
+          };
       }
     },
     {
@@ -77,40 +83,114 @@ export default function App() {
   useEffect(() => {
     const bootstrapAsync = async () => {
       let userToken;
+      let user;
+      let fetchedUser;
 
       try {
         userToken = await AsyncStorage.getItem('@userToken');
+        user = JSON.parse(userToken);
+        const promise = await fetch(`${BASE_URL}/user/${user._id}`);
+        fetchedUser = await promise.json();
       } catch (exception) {
         console.log(exception);
       }
 
-      dispatch({ type: 'RESTORE_TOKEN', token: userToken.token, user: userToken });
+      dispatch({
+        type: 'RESTORE_TOKEN',
+        token: fetchedUser?._id,
+        user: fetchedUser,
+      });
     };
 
     bootstrapAsync();
   }, []);
 
-  const authContext = useMemo(
-    () => ({
-      signIn: async (data) => {
-        await AsyncStorage.setItem('@userToken', JSON.stringify(data));
-        dispatch({ type: 'SIGN_IN', token: data.token, user: data });
-      },
-      signOut: async () => {
-        await AsyncStorage.clear();
-        dispatch({ type: 'SIGN_OUT' });
-      },
-      signUp: async (data) => {
-        await AsyncStorage.setItem('@userToken', JSON.stringify(data));
-        dispatch({ type: 'SIGN_IN', token: 'signup', user: data });
-      },
-      update: async (newData) => {
-        await AsyncStorage.setItem('@userToken', JSON.stringify(newData));
-        dispatch({ type: 'UPDATE', token: newData.token, user: newData });
-      },
-    }),
-    []
-  );
+  // useEffect(() => {
+  //   authContext.reload();
+  // }, [state.user, state.userToken])
+
+  const authContext = {
+    state: state,
+    reload: async () => {
+      const promise = await fetch(`${BASE_URL}/user/${state.userToken}`);
+      const user = await promise.json();
+      dispatch({
+        type: 'RESTORE_TOKEN',
+        token: user?._id,
+        user: user,
+      });
+    },
+    signIn: async (data) => {
+      const promise = await fetch(`${BASE_URL}/user/auth`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+      const dataPromise = await promise.json();
+      if (dataPromise) {
+        await AsyncStorage.setItem('@userToken', JSON.stringify(dataPromise));
+        dispatch({
+          type: 'SIGN_IN',
+          token: dataPromise._id,
+          user: dataPromise,
+        });
+      } else {
+        dispatch({ type: 'ERROR' });
+        ToastAndroid.show('Error while login', ToastAndroid.SHORT);
+      }
+    },
+    signOut: async () => {
+      await AsyncStorage.clear();
+      dispatch({ type: 'SIGN_OUT' });
+    },
+    signUp: async (userToken) => {
+      const promise = await fetch(`${BASE_URL}/user/auth`, {
+        method: 'POST',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: data.email,
+          password: data.password,
+        }),
+      });
+      const dataPromise = await promise.json();
+      if (dataPromise) {
+        await AsyncStorage.setItem('@userToken', JSON.stringify(dataPromise));
+        dispatch({
+          type: 'SIGN_UP',
+          token: dataPromise._id,
+          user: dataPromise,
+        });
+      } else {
+        dispatch({ type: 'ERROR' });
+        ToastAndroid.show('Error while login', ToastAndroid.SHORT);
+      }
+      // await AsyncStorage.setItem('@userToken', JSON.stringify(data));
+      // dispatch({ type: 'SIGN_IN', token: 'signup', user: data });
+    },
+    update: async (newData) => {
+      const promise = await fetch(`${BASE_URL}/user/${state.userToken}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newData),
+      });
+      const newUser = await promise.json();
+      // console.log(newUser);
+      await AsyncStorage.setItem('@userToken', JSON.stringify(newUser));
+      dispatch({ type: 'UPDATE', token: newUser._id, user: newUser });
+    },
+  };
 
   return (
     <AuthContext.Provider value={authContext}>
@@ -137,14 +217,14 @@ export default function App() {
         ) : (
           <Tab.Navigator
             screenOptions={({ route }) => ({
-              tabBarStyle: { position: 'absolute' },
-              tabBarBackground: () => (
-                <BlurView
-                  tint="light"
-                  intensity={80}
-                  style={{ ...StyleSheet.absoluteFill }}
-                />
-              ),
+              // tabBarStyle: { position: 'absolute' },
+              // tabBarBackground: () => (
+              //   <BlurView
+              //     tint="light"
+              //     intensity={80}
+              //     style={{ ...StyleSheet.absoluteFill }}
+              //   />
+              // ),
               tabBarIcon: ({ focused, size, color }) => {
                 return Svg[route.name] && Svg[route.name](size, color);
               },
@@ -152,8 +232,8 @@ export default function App() {
                 ...GLOBAL_TEXT_STYLES.semibold10,
                 fontSize: fontOffset + 6,
               },
-              tabBarActiveTintColor: GLOBAL_COLORS.ACCENT.blue100,
-              tabBarInactiveTintColor: GLOBAL_COLORS.ACCENT.blue50,
+              tabBarActiveTintColor: GLOBAL_COLORS.ACCENT.blue100 + '99',
+              tabBarInactiveTintColor: GLOBAL_COLORS.ACCENT.blue50 + '99',
             })}
           >
             <Tab.Group>
@@ -192,22 +272,6 @@ export default function App() {
                   };
                 }}
               />
-              {/* <Tab.Screen
-              name="Profile"
-              component={ProfileScreen}
-              options={{
-                title: 'Hồ sơ',
-                headerTitle: '',
-                headerBackground: () => (
-                  <BlurView
-                    tint="light"
-                    intensity={20}
-                    style={StyleSheet.absoluteFill}
-                  />
-                ),
-                headerTransparent: true,
-              }}
-            /> */}
               <Tab.Screen
                 name="Community"
                 component={CommunityScreen}

@@ -5,23 +5,22 @@ import { GLOBAL_TEXT_STYLES } from '../../constants/global';
 const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
 
 const Card = ({ title, place, image, time, fullWidth = false }) => {
-  const styles = StyleSheet.create({
-    container: {
-      shadowColor: '#000000',
-      shadowOffset: {
-        width: 0,
-        height: 3,
-      },
-      shadowRadius: 10,
-      shadowOpacity: 0.1,
-    },
-  });
+  // const styles = StyleSheet.create({
+  //   container: {
+  //     shadowColor: '#000000',
+  //     shadowOffset: {
+  //       width: 0,
+  //       height: 0,
+  //     },
+  //     shadowRadius: 5,
+  //     shadowOpacity: 0.1,
+  //   },
+  // });
   return (
     <TouchableOpacity
       className={`${
-        fullWidth ? 'w-full' : 'w-[300]'
-      } p-[15] rounded-lg bg-white shadow-2xl mt-5 overflow-visible`}
-      style={styles.container}
+        fullWidth ? 'w-full' : 'w-[350]'
+      } p-[15] rounded-lg bg-slate-100 shadow-2xl mt-5 overflow-visible`}
       activeOpacity={0.8}
     >
       <Image

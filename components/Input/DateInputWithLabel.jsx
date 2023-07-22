@@ -2,6 +2,7 @@ import DatePicker from '@dietime/react-native-date-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import React, { useState } from 'react';
 import {
+  Alert,
   Button,
   Modal,
   Platform,
@@ -16,28 +17,23 @@ import { BlurView } from 'expo-blur';
 
 const TextStyle = StyleSheet.create(GLOBAL_TEXT_STYLES);
 
-const DateInputWithLabel = ({ label, value = new Date(), onValueChange }) => {
+const DateInputWithLabel = ({
+  label,
+  value,
+  onValueChange,
+  disabled = false,
+}) => {
   const tabBarHeight = useBottomTabBarHeight();
 
-  const [date, setDate] = useState(value);
+  // const [date, setDate] = useState(value);
   const [mode, setMode] = useState('date');
-  const [show, setShow] = useState(true);
-  const [modalVisible, setModalVisible] = useState(false);
+  const [show, setShow] = useState(false);
+  // const [modalVisible, setModalVisible] = useState(false);
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate;
-    if (onValueChange) {
-      onValueChange(currentDate);
-    }
-    setDate(currentDate);
-  };
-
-  const showMode = (currentMode) => {
-    if (Platform.OS === 'android') {
-      setShow(false);
-      // for iOS, add a button that closes the picker
-    }
-    setMode(currentMode);
+    setShow(false);
+    onValueChange(currentDate);
   };
 
   return (
@@ -47,36 +43,37 @@ const DateInputWithLabel = ({ label, value = new Date(), onValueChange }) => {
       </Text>
       <Pressable
         className={`mt-3 py-4 px-5 rounded-lg bg-ink-senary`}
-        onPress={() => setModalVisible(true)}
+        onPress={() => {
+          if (!disabled) setShow(true);
+        }}
       >
         <Text className={`text-ink-primary`} style={{ ...TextStyle.regular10 }}>
-          {date.toLocaleDateString()}
+          {value.toLocaleDateString('vi-VN')}
         </Text>
       </Pressable>
-      <Modal
+      {/* <Modal
         animationType="fade"
         transparent={true}
-        su
         visible={modalVisible}
         onRequestClose={() => {
           Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}
-      >
-        <BlurView
+      > */}
+      {/* <BlurView
           className={`w-full h-full bg-[#00000020]`}
           tint="light"
           intensity={20}
           style={StyleSheet.absoluteFill}
-        >
-          <View
+        > */}
+      {/* <View
             style={{
               flex: 1,
               marginBottom: tabBarHeight + 20,
             }}
             className={`justify-end items-center`}
-          >
-            <View
+          > */}
+      {/* <View
               style={{
                 borderRadius: 20,
                 shadowColor: '#000',
@@ -89,8 +86,8 @@ const DateInputWithLabel = ({ label, value = new Date(), onValueChange }) => {
                 elevation: 5,
               }}
               className={`bg-ink-white items-end p-5`}
-            >
-              <Pressable
+            > */}
+      {/* <Pressable
                 style={{
                   paddingHorizontal: 10,
                   paddingVertical: 5,
@@ -104,24 +101,25 @@ const DateInputWithLabel = ({ label, value = new Date(), onValueChange }) => {
                 >
                   Hide
                 </Text>
-              </Pressable>
-              {show && (
-                <DateTimePicker
-                  testID="dateTimePicker"
-                  value={date}
-                  mode={mode}
-                  is24Hour={true}
-                  onChange={onChange}
-                  display={'inline'}
-                  themeVariant={'light'}
-                  accentColor={GLOBAL_COLORS.ACCENT.blue100}
-                />
-              )}
-            </View>
-          </View>
-        </BlurView>
-      </Modal>
+              </Pressable> */}
+      {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={value}
+          mode={mode}
+          is24Hour={true}
+          onChange={onChange}
+          display={'inline'}
+          themeVariant={'light'}
+          accentColor={GLOBAL_COLORS.ACCENT.blue100}
+          disabled={disabled}
+        />
+      )}
     </View>
+    //     </View>
+    //   </BlurView>
+    // </Modal>
+    // </View>
   );
 };
 

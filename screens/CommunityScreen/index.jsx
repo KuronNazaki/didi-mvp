@@ -17,7 +17,7 @@ import IndividualPlanScreen from '../IndividualPlanScreen';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import ArrowLeftSvg from './../../assets/arrow-left-1.svg';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { DEFAULT_IMAGE } from '../../constants/images';
+import { DEFAULT_AVATAR_IMAGE, DEFAULT_IMAGE } from '../../constants/images';
 
 const Stack = createNativeStackNavigator();
 
@@ -41,14 +41,14 @@ const CommunityMainScreen = ({ navigation }) => {
         <View
           className={`h-full p-5`}
           style={{
-            paddingTop: headerHeight + 20,
-            paddingBottom: tabBarHeight + 20,
+            paddingTop: 100,
+            paddingBottom: 20,
           }}
         >
           <View className={`flex-row items-center`} style={{ columnGap: 10 }}>
             <StyledImage
               size={50}
-              relativeSrc={user.imageUrl ? user.imageUrl : DEFAULT_IMAGE}
+              relativeSrc={user.avatar ? user.avatar : DEFAULT_AVATAR_IMAGE}
             />
             <View>
               <Text

@@ -15,25 +15,12 @@ const PremiumCard = ({
   onPress,
   variant = 'large',
 }) => {
-  const styles = StyleSheet.create({
-    container: {
-      shadowColor: '#000000',
-      shadowOffset: {
-        width: 0,
-        height: 3,
-      },
-      shadowRadius: 10,
-      shadowOpacity: 0.1,
-    },
-  });
-
   return variant === 'large' ? (
     <TouchableOpacity
       className={`${
         fullWidth ? 'w-full' : 'w-[300]'
-      }  rounded-lg bg-ink-white overflow-visible`}
+      }  rounded-lg bg-slate-100 overflow-visible`}
       activeOpacity={0.8}
-      style={styles.container}
       onPress={onPress}
     >
       {isPremiumCard ? (
@@ -41,7 +28,7 @@ const PremiumCard = ({
           <CrownSvg
             width={40}
             height={40}
-            color={GLOBAL_COLORS.ACCENT.yellow100}
+            color={GLOBAL_COLORS.ACCENT.yellow100 + '99'}
           />
           <Text
             style={{ ...GLOBAL_TEXT_STYLES.bold20 }}
@@ -165,9 +152,8 @@ const PremiumCard = ({
     <TouchableOpacity
       className={`${
         fullWidth ? 'w-full' : 'w-[300]'
-      }  rounded-lg bg-ink-white overflow-visible`}
+      }  rounded-lg bg-slate-100 overflow-visible`}
       activeOpacity={0.8}
-      style={styles.container}
       onPress={onPress}
     >
       {isPremiumCard ? (
@@ -176,7 +162,7 @@ const PremiumCard = ({
             <CrownSvg
               width={30}
               height={30}
-              color={GLOBAL_COLORS.ACCENT.yellow100}
+              color={GLOBAL_COLORS.ACCENT.yellow100 + '99'}
             />
             <View style={{ rowGap: 2 }}>
               <Text
@@ -186,7 +172,7 @@ const PremiumCard = ({
                 Tiết kiệm
               </Text>
               <Text
-                style={{ ...GLOBAL_TEXT_STYLES.semibold10, fontSize: 16 }}
+                style={{ ...GLOBAL_TEXT_STYLES.semibold10, fontSize: 13 }}
                 className={`text-ink-secondary`}
               >
                 Phiên bản tiêu chuẩn
@@ -218,7 +204,7 @@ const PremiumCard = ({
             <AwardSvg
               width={30}
               height={30}
-              color={GLOBAL_COLORS.ACCENT.blue100}
+              color={GLOBAL_COLORS.ACCENT.blue100 + '99'}
             />
             <View style={{ rowGap: 2 }}>
               <Text
@@ -228,7 +214,7 @@ const PremiumCard = ({
                 Tối ưu
               </Text>
               <Text
-                style={{ ...GLOBAL_TEXT_STYLES.semibold10, fontSize: 16 }}
+                style={{ ...GLOBAL_TEXT_STYLES.semibold10, fontSize: 13 }}
                 className={`text-ink-secondary`}
               >
                 Phiên bản cơ bản

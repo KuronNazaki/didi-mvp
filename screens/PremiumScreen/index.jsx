@@ -14,7 +14,7 @@ const PremiumScreen = ({ navigation }) => {
 
   return (
     <View className={`w-full h-full bg-ink-white`}>
-      <ScrollView className={`h-full overflow-visible`}>
+      <ScrollView className={`h-full`}>
         <View
           className={'h-full w-full p-5'}
           style={{
@@ -109,16 +109,16 @@ const PremiumScreen = ({ navigation }) => {
                   item === 'checked' ? (
                     <View key={index}>
                       <VerifySvg
-                        width={17}
-                        height={17}
-                        color={GLOBAL_COLORS.ACCENT.green100}
+                        width={22}
+                        height={22}
+                        color={GLOBAL_COLORS.ACCENT.green100 + '99'}
                       />
                     </View>
                   ) : (
                     <View key={index}>
                       <PadlockSvg
-                        width={16}
-                        height={16}
+                        width={22}
+                        height={22}
                         color={GLOBAL_COLORS.INK.secondary}
                       />
                     </View>
@@ -149,9 +149,9 @@ const PremiumScreen = ({ navigation }) => {
                   item === 'checked' ? (
                     <View key={index}>
                       <VerifySvg
-                        width={17}
-                        height={17}
-                        color={GLOBAL_COLORS.ACCENT.green100}
+                        width={22}
+                        height={22}
+                        color={GLOBAL_COLORS.ACCENT.green100 + '99'}
                       />
                     </View>
                   ) : (

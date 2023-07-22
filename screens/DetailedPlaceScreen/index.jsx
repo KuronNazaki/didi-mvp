@@ -3,41 +3,87 @@ import {
   Image,
   Keyboard,
   Pressable,
+  SafeAreaView,
   ScrollView,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
 import { TextInputWithLabel } from '../../components/Input';
 import { BaseButton } from '../../components/Button';
+import ArrowLeftSvg from './../../assets/arrow-left-1.svg';
 import { GLOBAL_COLORS, GLOBAL_TEXT_STYLES } from '../../constants/global';
-import StarSvg from '../../assets/star.svg';
+import TrashSvg from '../../assets/trash.svg';
+import { BASE_URL } from '../../constants/api';
 
 const uri = './../../assets/avatar.png';
 const DEFAULT_IMAGE = Image.resolveAssetSource(require(uri)).uri;
 
 const DetailedPlaceScreen = ({ navigation, route }) => {
-  const { place } = route.params;
-  let deserializedPlace = {};
+  const { place, planId, dayIndex } = route.params;
+  let plan = {};
   if (typeof place === 'string') {
-    deserializedPlace = JSON.parse(place);
+    plan = JSON.parse(place);
   }
   const {
+    _id,
     name,
-    description,
-    location,
+    placeDescription,
+    placeLocation,
     phoneNumber,
     rating,
     openingTime,
     planningTime,
     imageUrl,
-  } = deserializedPlace;
+  } = plan;
 
   const [nameState, setNameState] = useState(name);
-  const [placeLocationState, setPlaceLocationState] = useState(location);
+  const [placeLocationState, setPlaceLocationState] = useState(placeLocation);
   const [phoneNumberState, setPhoneNumberState] = useState(phoneNumber);
-  const [descriptionState, setDescriptionState] = useState(description);
+  const [descriptionState, setDescriptionState] = useState(placeDescription);
   const [imageUrlState, setImageUrlState] = useState(imageUrl);
+
+  const onUpdate = async () => {
+    try {
+      const promise = await fetch(`${BASE_URL}/attraction/${_id}`, {
+        method: 'PUT',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          name: nameState,
+          placeLocation: placeLocationState,
+          placeDescription: descriptionState,
+          phoneNumber: phoneNumberState,
+          imageUrl: imageUrlState,
+        }),
+      });
+      navigation.goBack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const onDelete = async () => {
+    try {
+      const promise = await fetch(`${BASE_URL}/attraction/${_id}`, {
+        method: 'DELETE',
+        headers: {
+          Accept: 'application/json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          planId,
+          dayIndex,
+        }),
+      });
+      navigation.goBack();
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <ScrollView className={'h-full w-full'}>
@@ -47,15 +93,25 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
         accessible={false}
       >
         <View className="h-full w-full">
-          <View className="z-50">
+          <View
+            className={`absolute w-full flex-row justify-between items-center z-50`}
+            style={{ padding: 20 }}
+          >
+            <TouchableOpacity onPress={() => navigation.goBack()}>
+              <ArrowLeftSvg width={30} height={30} color={'white'} />
+            </TouchableOpacity>
+            <TouchableOpacity onPress={onDelete}>
+              <TrashSvg width={28} height={28} color={'white'} />
+            </TouchableOpacity>
+          </View>
+          <View className="z-40">
             <View className={`w-full h-[300]`}>
               <Image
                 className={`w-full h-full`}
-                source={{ uri: imageUrl ? imageUrl : DEFAULT_IMAGE }}
+                source={{ uri: imageUrlState }}
                 style={{ resizeMode: 'cover' }}
               />
             </View>
-
             <View className="bg-ink-white p-5">
               {/* <View className="flex-row items-end">
                 <Text className="text-[#55555e] text-3xl font-bold">
@@ -126,14 +182,14 @@ const DetailedPlaceScreen = ({ navigation, route }) => {
                   value={phoneNumberState}
                   onValueChange={setPhoneNumberState}
                 />
-                <TextInputWithLabel
+                {/* <TextInputWithLabel
                   label={'Ghi chú'}
                   multiline={true}
                   placeholder="Ghi chú ở đây"
-                />
+                /> */}
               </View>
               <View className="w-full mt-6">
-                <BaseButton title={'Lưu'} />
+                <BaseButton title={'Lưu'} onPress={onUpdate} />
               </View>
             </View>
           </View>
